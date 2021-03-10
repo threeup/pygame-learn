@@ -16,6 +16,14 @@ def main():
     clock = pygame.time.Clock()
     running = True
 
+    ### Joystick stuff
+    pygame.joystick.init()
+    joystick_count = pygame.joystick.get_count()
+
+    joysticks = [pygame.joystick.Joystick(x) for x in range(joystick_count)]
+    for j in range(joystick_count):
+        joysticks[j].init()
+
     ### Physics stuff
     space = pymunk.Space()
     space.gravity = 0.0, -900.0
@@ -39,7 +47,16 @@ def main():
         ## _pygame.h PGPOST_EVENTBEGIN
         ## pygame-stubs/constants.pyi 
         ## https://github.com/davidsiaw/SDL2/blob/master/include/SDL_events.h
+        for j in range(joystick_count):
+            joystick = joysticks[j]
+            buttons = joystick.get_numbuttons()
+            for i in range(buttons):
+                button = joystick.get_button(i)
+                if button:
+                    print(button,i)
+
         for event in pygame.event.get():
+            print(event)
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
