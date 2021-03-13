@@ -37,53 +37,58 @@ def main():
 
     colc = pygame.Color("cyan")
     colg = pygame.Color("green")
+    colb = pygame.Color("blue")
+    coly = pygame.Color("yellow")
+    colr = pygame.Color("red")
     col = colc
 
     run_physics = True
     
-    evtype = 0
+    paused = False
     while running:
-        moving = False
         ## _pygame.h PGPOST_EVENTBEGIN
         ## pygame-stubs/constants.pyi 
         ## https://github.com/davidsiaw/SDL2/blob/master/include/SDL_events.h
-        for j in range(joystick_count):
-            joystick = joysticks[j]
-            buttons = joystick.get_numbuttons()
-            for i in range(buttons):
-                button = joystick.get_button(i)
-                if button:
-                    print(button,i)
+        
+        ##for j in range(joystick_count):
+        ##    joystick = joysticks[j]
+        ##    buttons = joystick.get_numbuttons()
+        ##    for i in range(buttons):
+        ##        button = joystick.get_button(i)
+        ##        if button:
+        ##            print(button,i)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_f:
-                col = colc
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_g:
-                col = colg
-            elif event.type == pygame.MOUSEBUTTONUP:
-                moving = True
-            elif event.type == pygame.JOYAXISMOTION:
-                moving = True
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                moving = True
-            elif event.type == pygame.MOUSEMOTION:
-                moving = True
-            elif event.type == pygame.KEYUP: 
-                moving = True
-            elif event.type == pygame.KEYDOWN:
-                moving = True
             elif event.type == pygame.ACTIVEEVENT:
-                moving = True
-            elif event.type == 2304: ##clipboardupdate
-                moving = True
-            else:
-                print("s")
-                print(event)
-                evtype = event.type
+                if event.gain == 0:
+                    paused = True
+                else:
+                    paused = False
+            elif event.type == pygame.JOYBUTTONDOWN:
+                if event.button == 0:
+                    col = colg
+                elif event.button == 1:
+                    col = colr
+                elif event.button == 2:
+                    col = coly
+                elif event.button == 3:
+                    col = colb
+            elif event.type == pygame.JOYBUTTONUP:
+                col = colc
+            ## elif event.type == pygame.JOYAXISMOTION:
+            ##     moving = True
+            ## elif event.type == pygame.JOYHATMOTION:
+            ##     moving = True
+            ## elif event.type == pygame.MOUSEBUTTONUP:
+            ##     moving = True
+            ## elif event.type == pygame.MOUSEBUTTONDOWN:
+            ##     moving = True
+            ## elif event.type == pygame.MOUSEMOTION:
+            ##     moving = True
 
         p = pygame.mouse.get_pos()
         mouse_pos = Vec2d(p[X], flipy(p[Y]))
@@ -101,13 +106,10 @@ def main():
 
         # Display some text
         font = pygame.font.Font(None, 48)
-        line = "Greetings"+str(moving)
+        line = "Greetings"+str(not paused)
         text = font.render(line, True, pygame.Color("black"))
         screen.blit(text, (5, 5))
-        line = "Ev"+str(evtype)
-        text = font.render(line, True, pygame.Color("black"))
-        screen.blit(text, (5, 60))
-
+        
         r = mouse_shape.radius
         v = mouse_shape.body.position
         p = int(v.x), int(flipy(v.y))
