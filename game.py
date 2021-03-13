@@ -12,12 +12,12 @@ X, Y = 0, 1
 
 def flipy(y):
     """Small hack to convert chipmunk physics to pygame coordinates"""
-    return -y + 600
+    return -y + 380
 
 def main():
 
     pygame.init()
-    screen = pygame.display.set_mode((600, 600))
+    screen = pygame.display.set_mode((620, 380))
     clock = pygame.time.Clock()
     running = True
 
@@ -71,7 +71,7 @@ def main():
         # Update physics
         if run_physics:
             dt = 1.0 / 60.0
-            steps = 3
+            steps = 1
             for _ in range(steps):
                 player0.tick(dt)
                 hero.tick(dt)

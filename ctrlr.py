@@ -30,17 +30,17 @@ class Ctrlr:
 
     def tick(self, deltaTime):
         if self.delta_x == 0 and self.delta_y == 0:
-            self.delta_x = 1
-        elif self.delta_x == 1:
-            if self.controlled.p.y > 450:
-                self.delta_x = -1
+            self.delta_x = 2
+        elif self.delta_x == 2:
+            if self.controlled.p.y > 280:
+                self.delta_x = -2
                 self.delta_y = 0
             elif self.delta_y == 0 and self.controlled.p.x > 400:
-                self.delta_y = 3
+                self.delta_y = 5
         else:
             if self.controlled.p.y < 100:
-                self.delta_x = 1
+                self.delta_x = 2
                 self.delta_y = 0
             elif self.delta_y == 0 and self.controlled.p.x < 200:
-                self.delta_y = -3
+                self.delta_y = -5
         self.controlled.move(self.delta_x, self.delta_y)
