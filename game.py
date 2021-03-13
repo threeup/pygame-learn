@@ -3,7 +3,12 @@ import pygame
 import pymunk
 from pymunk import Vec2d
 
+
+from ctrlr import Ctrlr
+from enty import Enty
+
 X, Y = 0, 1
+
 
 def flipy(y):
     """Small hack to convert chipmunk physics to pygame coordinates"""
@@ -16,7 +21,7 @@ def main():
     clock = pygame.time.Clock()
     running = True
 
-    ### Joystick stuff
+    # Joystick stuff
     pygame.joystick.init()
     joystick_count = pygame.joystick.get_count()
 
@@ -24,41 +29,30 @@ def main():
     for j in range(joystick_count):
         joysticks[j].init()
 
-    ### Physics stuff
+    # Physics stuff
     space = pymunk.Space()
     space.gravity = 0.0, -900.0
 
-    
-    ### Mouse
-    mouse_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
-    mouse_shape = pymunk.Circle(mouse_body, 30, (0, 0))
-    mouse_shape.collision_type = 1
-    space.add(mouse_body, mouse_shape)
+    # Entities
+    hero = Enty("hero", pygame.Color("black"))
+    mouse = Enty("mouse", pygame.Color("purple"))
+    player0 = Ctrlr(hero)
 
-    colc = pygame.Color("cyan")
-    colg = pygame.Color("green")
-    colb = pygame.Color("blue")
-    coly = pygame.Color("yellow")
-    colr = pygame.Color("red")
-    col = colc
 
+    # GameState
     run_physics = True
-    
     paused = False
+
+    # Loop
     while running:
-        ## _pygame.h PGPOST_EVENTBEGIN
-        ## pygame-stubs/constants.pyi 
-        ## https://github.com/davidsiaw/SDL2/blob/master/include/SDL_events.h
-        
-        ##for j in range(joystick_count):
-        ##    joystick = joysticks[j]
-        ##    buttons = joystick.get_numbuttons()
-        ##    for i in range(buttons):
-        ##        button = joystick.get_button(i)
-        ##        if button:
-        ##            print(button,i)
 
         for event in pygame.event.get():
+            if (event.type == pygame.JOYAXISMOTION or
+                event.type == pygame.JOYHATMOTION or
+                event.type == pygame.JOYBUTTONDOWN or
+                    event.type == pygame.JOYBUTTONUP):
+                if event.joy == 0:
+                    player0.handle_event(event)
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -68,55 +62,42 @@ def main():
                     paused = True
                 else:
                     paused = False
-            elif event.type == pygame.JOYBUTTONDOWN:
-                if event.button == 0:
-                    col = colg
-                elif event.button == 1:
-                    col = colr
-                elif event.button == 2:
-                    col = coly
-                elif event.button == 3:
-                    col = colb
-            elif event.type == pygame.JOYBUTTONUP:
-                col = colc
-            ## elif event.type == pygame.JOYAXISMOTION:
-            ##     moving = True
-            ## elif event.type == pygame.JOYHATMOTION:
-            ##     moving = True
-            ## elif event.type == pygame.MOUSEBUTTONUP:
-            ##     moving = True
-            ## elif event.type == pygame.MOUSEBUTTONDOWN:
-            ##     moving = True
-            ## elif event.type == pygame.MOUSEMOTION:
-            ##     moving = True
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                paused = True
+            elif event.type == pygame.MOUSEBUTTONUP:
+                paused = False
 
-        p = pygame.mouse.get_pos()
-        mouse_pos = Vec2d(p[X], flipy(p[Y]))
-        mouse_body.position = mouse_pos
 
-        
-        ### Update physics  
+        # Update physics
         if run_physics:
             dt = 1.0 / 60.0
-            for _ in range(1):
+            steps = 3
+            for _ in range(steps):
+                player0.tick(dt)
+                hero.tick(dt)
                 space.step(dt)
 
-        ### Draw stuff
-        screen.fill(col)
+        # Update mouse
+        p = pygame.mouse.get_pos()
+        mouse.set_pos(p[X], flipy(p[Y]))
+
+        # Draw stuff
+        screen.fill(player0.col)
 
         # Display some text
         font = pygame.font.Font(None, 48)
         line = "Greetings"+str(not paused)
         text = font.render(line, True, pygame.Color("black"))
         screen.blit(text, (5, 5))
-        
-        r = mouse_shape.radius
-        v = mouse_shape.body.position
-        p = int(v.x), int(flipy(v.y))
-        pygame.draw.circle(screen, pygame.Color("blue"), p, int(r), 2)
 
-        
-        ### Flip screen
+
+        # Draw ents
+        hero_pos = hero.get_draw_pos(flipy)
+        pygame.draw.circle(screen, hero.color, hero_pos, int(hero.radius), 12)
+        mouse_pos = mouse.get_draw_pos(flipy)
+        pygame.draw.circle(screen, mouse.color, mouse_pos, int(mouse.radius), 5)
+
+        # Flip screen
         pygame.display.flip()
         clock.tick(50)
         pygame.display.set_caption("fps: " + str(clock.get_fps()))
@@ -126,4 +107,3 @@ if __name__ == "__main__":
     doprof = 0
     if not doprof:
         main()
-
