@@ -56,7 +56,6 @@ def main():
                     print(button,i)
 
         for event in pygame.event.get():
-            print(event)
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -67,6 +66,8 @@ def main():
                 col = colg
             elif event.type == pygame.MOUSEBUTTONUP:
                 moving = True
+            elif event.type == pygame.JOYAXISMOTION:
+                moving = True
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 moving = True
             elif event.type == pygame.MOUSEMOTION:
@@ -74,30 +75,6 @@ def main():
             elif event.type == pygame.KEYUP: 
                 moving = True
             elif event.type == pygame.KEYDOWN:
-                moving = True
-            elif event.type == pygame.TEXTEDITING:
-                moving = True
-            elif event.type == pygame.TEXTINPUT:
-                moving = True
-            elif event.type == pygame.VIDEOEXPOSE:
-                moving = True
-            elif event.type == pygame.WINDOWEXPOSED:
-                moving = True
-            elif event.type == pygame.WINDOWTAKEFOCUS:
-                moving = True
-            elif event.type == pygame.WINDOWENTER:
-                moving = True
-            elif event.type == pygame.WINDOWLEAVE:
-                moving = True
-            elif event.type == pygame.WINDOWSHOWN:
-                moving = True
-            elif event.type == pygame.WINDOWMOVED:
-                moving = True
-            elif event.type == pygame.WINDOWFOCUSGAINED:
-                moving = True
-            elif event.type == pygame.WINDOWFOCUSLOST:
-                moving = True
-            elif event.type == pygame.AUDIODEVICEADDED:
                 moving = True
             elif event.type == pygame.ACTIVEEVENT:
                 moving = True
