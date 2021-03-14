@@ -4,15 +4,27 @@ import pymunk
 from pymunk import Vec2d
 
 
-from ctrlr import Ctrlr
+from ctrlr import Ctrlr, AICtrlr, HumanCtrlr, MouseCtrlr
 from enty import Enty
 
-X, Y = 0, 1
+ents = []
+ctrlrs = []
 
 
 def flipy(y):
     """Small hack to convert chipmunk physics to pygame coordinates"""
     return -y + 380
+
+def makeEnt(name, color):
+    result = Enty(name, pygame.Color(color))
+    ents.append(result)
+    return result
+
+def makeCircleEnt(name, color, space, type):
+    result = makeEnt(name, color)
+    result.addCircleCollision(space, pymunk.Body.KINEMATIC)
+    return result
+
 
 def main():
 
@@ -34,9 +46,21 @@ def main():
     space.gravity = 0.0, -900.0
 
     # Entities
-    hero = Enty("hero", pygame.Color("black"))
-    mouse = Enty("mouse", pygame.Color("purple"))
-    player0 = Ctrlr(hero)
+    #aiball = makeCircleEnt("hero", "white", space, pymunk.Body.KINEMATIC)
+    mouseball = makeCircleEnt("mouse", "white", space, pymunk.Body.KINEMATIC)
+    
+    ball0 = makeCircleEnt("ball-r", "red", space, pymunk.Body.KINEMATIC)
+    ball1 = makeCircleEnt("ball-y", "yellow", space, pymunk.Body.KINEMATIC)
+    ball2 = makeCircleEnt("ball-g", "green", space, pymunk.Body.KINEMATIC)
+    ball3 = makeCircleEnt("ball-b", "blue", space, pymunk.Body.KINEMATIC)
+    
+    # Controller
+    #aiCtrlr = AICtrlr([aiball])
+    #ctrlrs.append(aiCtrlr)
+    mouseCtrlr = MouseCtrlr([mouseball], flipy)
+    ctrlrs.append(mouseCtrlr)
+    humanCtrlr = HumanCtrlr([ball0, ball1, ball2, ball3])
+    ctrlrs.append(humanCtrlr)
 
 
     # GameState
@@ -45,14 +69,15 @@ def main():
 
     # Loop
     while running:
-
+        
+        mouseCtrlr.handle_event(0)
         for event in pygame.event.get():
             if (event.type == pygame.JOYAXISMOTION or
                 event.type == pygame.JOYHATMOTION or
                 event.type == pygame.JOYBUTTONDOWN or
                     event.type == pygame.JOYBUTTONUP):
                 if event.joy == 0:
-                    player0.handle_event(event)
+                    humanCtrlr.handle_event(event)
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -73,29 +98,25 @@ def main():
             dt = 1.0 / 60.0
             steps = 1
             for _ in range(steps):
-                player0.tick(dt)
-                hero.tick(dt)
+                for ent in ents:
+                    ent.tick(dt)
+                for ctrlr in ctrlrs:
+                    ctrlr.tick(dt)
                 space.step(dt)
 
-        # Update mouse
-        p = pygame.mouse.get_pos()
-        mouse.set_pos(p[X], flipy(p[Y]))
 
         # Draw stuff
-        screen.fill(player0.col)
+        screen.fill(pygame.Color("cyan"))
 
         # Display some text
         font = pygame.font.Font(None, 48)
-        line = "Greetings"+str(not paused)
+        line = "Active"+str(not paused)
         text = font.render(line, True, pygame.Color("black"))
         screen.blit(text, (5, 5))
 
-
         # Draw ents
-        hero_pos = hero.get_draw_pos(flipy)
-        pygame.draw.circle(screen, hero.color, hero_pos, int(hero.radius), 12)
-        mouse_pos = mouse.get_draw_pos(flipy)
-        pygame.draw.circle(screen, mouse.color, mouse_pos, int(mouse.radius), 5)
+        for ent in ents:
+            ent.draw(screen, flipy)
 
         # Flip screen
         pygame.display.flip()

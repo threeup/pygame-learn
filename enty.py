@@ -1,4 +1,4 @@
-
+import pygame
 import pymunk
 from pymunk import Vec2d
 
@@ -20,5 +20,12 @@ class Enty:
     def tick(self, delta):
         self.elapsed_time += delta
 
-    def get_draw_pos(self, flip):
-        return int(self.p.x), int(flip(self.p.y))
+    def draw(self, screen, flipy):
+        draw_pos = int(self.p.x), int(flipy(self.p.y))
+        pygame.draw.circle(screen, self.color, draw_pos, int(self.radius), 12)
+
+    def addCircleCollision(self, space, btype):
+        self.body = pymunk.Body(body_type = btype)
+        self.shape = pymunk.Circle(self.body, 30, (0, 0))
+        self.shape.collision_type = 1
+        space.add(self.body)
