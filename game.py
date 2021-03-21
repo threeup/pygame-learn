@@ -20,9 +20,11 @@ def makeEnt(name, color):
     ents.append(result)
     return result
 
-def makeCircleEnt(name, color, space, type):
+def makeCircleEnt(space, name, color, pos, btype):
     result = makeEnt(name, color)
-    result.addCircleCollision(space, pymunk.Body.KINEMATIC)
+    result.addCircleCollision(space, pos, btype)
+    if(pos[0] > 400):
+        result.debug = True
     return result
 
 
@@ -43,16 +45,17 @@ def main():
 
     # Physics stuff
     space = pymunk.Space()
-    space.gravity = 0.0, -900.0
+    space.gravity = 0.0, -981.0
+
 
     # Entities
     #aiball = makeCircleEnt("hero", "white", space, pymunk.Body.KINEMATIC)
-    mouseball = makeCircleEnt("mouse", "white", space, pymunk.Body.KINEMATIC)
+    mouseball = makeCircleEnt(space, "mouse", "white", (10,10), pymunk.Body.KINEMATIC)
     
-    ball0 = makeCircleEnt("ball-r", "red", space, pymunk.Body.KINEMATIC)
-    ball1 = makeCircleEnt("ball-y", "yellow", space, pymunk.Body.KINEMATIC)
-    ball2 = makeCircleEnt("ball-g", "green", space, pymunk.Body.KINEMATIC)
-    ball3 = makeCircleEnt("ball-b", "blue", space, pymunk.Body.KINEMATIC)
+    ball0 = makeCircleEnt(space, "ball-r", "red", (100+110*0, 320), pymunk.Body.DYNAMIC)
+    ball1 = makeCircleEnt(space, "ball-y", "yellow", (100+110*1, 320),pymunk.Body.DYNAMIC)
+    ball2 = makeCircleEnt(space, "ball-g", "green", (100+110*2, 320),pymunk.Body.DYNAMIC)
+    ball3 = makeCircleEnt(space, "ball-b", "blue", (100+110*3, 320), pymunk.Body.DYNAMIC)
     
     # Controller
     #aiCtrlr = AICtrlr([aiball])
@@ -103,6 +106,8 @@ def main():
                 for ctrlr in ctrlrs:
                     ctrlr.tick(dt)
                 space.step(dt)
+
+
 
 
         # Draw stuff

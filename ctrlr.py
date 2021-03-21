@@ -11,30 +11,32 @@ class Ctrlr:
 
 class MouseCtrlr(Ctrlr):
     def __init__(self, enty_list, flipy):
-        self.p = [0,0]
+        self.mousep = [0, 0]
         self.flipy = flipy
         # invoking the __init__ of the parent class
         Ctrlr.__init__(self, enty_list)
 
     def handle_event(self, event):
-        self.p = pygame.mouse.get_pos()
+        self.mousep = pygame.mouse.get_pos()
 
     def tick(self, deltaTime):
         first_enty = self.list[0]
-        first_enty.set_pos(self.p[0], self.flipy(self.p[1]))
+        first_enty.set_pos(self.mousep[0], self.flipy(self.mousep[1]))
+
 
 class HumanCtrlr(Ctrlr):
     def __init__(self, enty_list):
         # invoking the __init__ of the parent class
         Ctrlr.__init__(self, enty_list)
         self.held = []
+        self.sound_effect = pygame.mixer.Sound('brr.wav')
 
-        for i in range(self.count):
+        for _ in range(self.count):
             self.held.append(False)
-            self.list[i].set_pos(100+110*i, 320)
 
     def handle_event(self, event):
         if event.type == pygame.JOYBUTTONDOWN:
+            self.sound_effect.play()
             for i in range(self.count):
                 if event.button == i:
                     self.held[i] = True
@@ -45,16 +47,16 @@ class HumanCtrlr(Ctrlr):
 
     def tick(self, deltaTime):
         for i in range(self.count):
-            p = self.list[i].p
+            p = self.list[i].get_pos()
             if self.held[i]:
                 if p.y < 320:
-                    self.list[i].move(0,3)
+                    self.list[i].impulse(0, 30)
             else:
-                if p.y > 100:
-                    self.list[i].move(0,-1)
+                if p.y < 100:
+                    self.list[i].set_pos(p.x, 100)
+        return
 
-            
-        
+
 class AICtrlr(Ctrlr):
     def __init__(self, enty_list):
         # invoking the __init__ of the parent class

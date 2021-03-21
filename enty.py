@@ -7,25 +7,35 @@ class Enty:
         self.name = name
         self.color = color
         self.radius = 50
-        self.p =  Vec2d(0,0)
         self.elapsed_time = 0
+        self.debug = False
 
         
     def set_pos(self, x, y):
-        self.p = Vec2d(x, y)
+        if self.body:
+            self.body.velocity = Vec2d(0,0)
+            self.body.position = x,y
 
-    def move(self, x, y):
-        self.p = Vec2d(self.p.x + x, self.p.y + y)
+    def get_pos(self):
+        if self.body:
+            return self.body.position
+        return (0,0)
+
+    def impulse(self, x, y):
+        if self.body:
+            impulse = (self.body.mass * x,self.body.mass * y)
+            self.body.apply_impulse_at_local_point(impulse)
 
     def tick(self, delta):
         self.elapsed_time += delta
 
     def draw(self, screen, flipy):
-        draw_pos = int(self.p.x), int(flipy(self.p.y))
+        p = self.body.position
+        draw_pos = int(p.x), int(flipy(p.y))
         pygame.draw.circle(screen, self.color, draw_pos, int(self.radius), 12)
 
-    def addCircleCollision(self, space, btype):
-        self.body = pymunk.Body(body_type = btype)
+    def addCircleCollision(self, space, pos, btype):
+        self.body = pymunk.Body(1,1666,body_type = btype)
+        self.body.position = pos[0],pos[1]
         self.shape = pymunk.Circle(self.body, 30, (0, 0))
-        self.shape.collision_type = 1
-        space.add(self.body)
+        space.add(self.body, self.shape)
