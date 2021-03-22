@@ -29,7 +29,6 @@ def makeCircleEnt(space, name, color, pos, btype):
 
 
 def main():
-
     pygame.init()
     screen = pygame.display.set_mode((620, 380))
     clock = pygame.time.Clock()
