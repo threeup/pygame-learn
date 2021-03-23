@@ -6,6 +6,8 @@ from pymunk import Vec2d
 
 from ctrlr import Ctrlr, AICtrlr, HumanCtrlr, MouseCtrlr
 from enty import Enty
+from circenty import CircEnty
+from lineenty import LineEnty
 
 ents = []
 ctrlrs = []
@@ -15,18 +17,18 @@ def flipy(y):
     """Small hack to convert chipmunk physics to pygame coordinates"""
     return -y + 380
 
-def makeEnt(name, color):
-    result = Enty(name, pygame.Color(color))
+
+def makeLineEnt(space, name, color, path, pt1, pt2, btype):
+    result = LineEnty(name, pygame.Color(color), path)
+    result.addCollision(space, pt1, pt2, btype)
     ents.append(result)
     return result
 
-def makeCircleEnt(space, name, color, pos, btype):
-    result = makeEnt(name, color)
-    result.addCircleCollision(space, pos, btype)
-    if(pos[0] > 400):
-        result.debug = True
+def makeCircleEnt(space, name, color, path, pos, btype):
+    result = CircEnty(name, pygame.Color(color), path)
+    result.addCollision(space, pos, btype)
+    ents.append(result)
     return result
-
 
 def main():
     pygame.init()
@@ -46,15 +48,28 @@ def main():
     space = pymunk.Space()
     space.gravity = 0.0, -981.0
 
+    # World
+    raw_bg_img = pygame.image.load("bg.jpg")
+    bg_img = pygame.transform.scale(
+                raw_bg_img, (620,396))
+
+    _ = makeLineEnt(space, "leftWall", "orange", 
+        None, (10,10), (10,400), pymunk.Body.STATIC)
+    _ = makeLineEnt(space, "rightWall", "orange", 
+        None, (510,10), (510,400), pymunk.Body.STATIC)
 
     # Entities
     #aiball = makeCircleEnt("hero", "white", space, pymunk.Body.KINEMATIC)
-    mouseball = makeCircleEnt(space, "mouse", "white", (10,10), pymunk.Body.KINEMATIC)
+    mouseball = makeCircleEnt(space, "mouse", "white", "hoop.png", (10,10), pymunk.Body.KINEMATIC)
     
-    ball0 = makeCircleEnt(space, "ball-r", "red", (100+110*0, 320), pymunk.Body.DYNAMIC)
-    ball1 = makeCircleEnt(space, "ball-y", "yellow", (100+110*1, 320),pymunk.Body.DYNAMIC)
-    ball2 = makeCircleEnt(space, "ball-g", "green", (100+110*2, 320),pymunk.Body.DYNAMIC)
-    ball3 = makeCircleEnt(space, "ball-b", "blue", (100+110*3, 320), pymunk.Body.DYNAMIC)
+    ball0 = makeCircleEnt(space, "ball-r", "red", 
+        "hoopred.png", (100+110*0, 320), pymunk.Body.DYNAMIC)
+    ball1 = makeCircleEnt(space, "ball-y", "yellow", 
+        "hoopyellow.png", (100+110*1, 320),pymunk.Body.DYNAMIC)
+    ball2 = makeCircleEnt(space, "ball-g", "green",
+        "hoopgreen.png", (100+110*2, 320),pymunk.Body.DYNAMIC)
+    ball3 = makeCircleEnt(space, "ball-b", "blue",
+        "hoopblue.png", (100+110*3, 320), pymunk.Body.DYNAMIC)
     
     # Controller
     #aiCtrlr = AICtrlr([aiball])
@@ -110,10 +125,10 @@ def main():
 
 
         # Draw stuff
-        screen.fill(pygame.Color("cyan"))
+        screen.blit(bg_img, (0, 0))
 
         # Display some text
-        font = pygame.font.Font(None, 48)
+        font = pygame.font.Font(None, 16)
         line = "Active"+str(not paused)
         text = font.render(line, True, pygame.Color("black"))
         screen.blit(text, (5, 5))

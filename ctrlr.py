@@ -1,8 +1,6 @@
 import pygame
 import numpy as np
-import scipy.io as sio
 import scipy.io.wavfile as siow
-import librosa
 from enty import Enty
 
 SAMPLERATE = 44100
@@ -36,17 +34,10 @@ class HumanCtrlr(Ctrlr):
         self.sfx_down = []
         self.sfx_up = []
 
-        brr_start = 4
-        brr_factor = 6
-
         for i in range(self.count):
             self.held.append(False)
-            self.sfx_down.append(self.load_sound(
-                "brr.wav", brr_start + i * brr_factor))
-            self.sfx_up.append(self.load_sound(
-                "brr.wav", brr_start + brr_factor / 2 + i * brr_factor))
-            # self.sfx_down.append(self.make_tone(100+i*100))
-            # self.sfx_up.append(self.make_tone(150+i*100))
+            self.sfx_down.append(self.make_tone(100+i*100))
+            self.sfx_up.append(self.make_tone(150+i*100))
 
     def make_tone(self, freq=1000, volume=10000, length=1):
         
@@ -67,25 +58,8 @@ class HumanCtrlr(Ctrlr):
         buffer = np.array(s)
         return pygame.sndarray.make_sound(buffer.astype(np.int16))
 
-    def make_noise(self, pitch):
-        xlen = 1
-        buffer = np.sin(np.pi * np.arange(SAMPLERATE*xlen) *
-                        pitch / SAMPLERATE).astype(np.float32)
-        if pitch != 0:
-            buffer = librosa.effects.pitch_shift(buffer, SAMPLERATE, n_steps=pitch)
-            #buffer = librosa.effects.time_stretch(buffer, 1)
-
-        buffer = np.repeat(buffer.reshape(len(buffer), 1), 2, axis=1)
-        return pygame.sndarray.make_sound(buffer)
-
-    def load_sound(self, name, pitch):
-        sr, buffer = siow.read(name)
-        if pitch != 0:
-            buffer = buffer / np.float32(32767.0)
-            buffer = librosa.effects.pitch_shift(buffer, sr, n_steps=pitch)
-            buffer = buffer * np.float32(32767.0)
-            buffer = buffer.astype(np.int16)
-
+    def load_sound(self, name):
+        _, buffer = siow.read(name)
         buffer = np.repeat(buffer.reshape(len(buffer), 1), 2, axis=1)
         return pygame.sndarray.make_sound(buffer)
 
@@ -94,14 +68,12 @@ class HumanCtrlr(Ctrlr):
             for i in range(self.count):
                 if event.button == i:
                     self.held[i] = True
-                    # self.sfx_up[i].set_volume(0.9)
                     self.sfx_down[i].set_volume(1)
                     self.sfx_down[i].play()
         elif event.type == pygame.JOYBUTTONUP:
             for i in range(self.count):
                 if event.button == i:
                     self.held[i] = False
-                    # self.sfx_down[i].set_volume(0.9)
                     self.sfx_up[i].set_volume(1)
                     self.sfx_up[i].play()
 
