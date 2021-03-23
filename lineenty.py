@@ -35,7 +35,7 @@ class LineEnty(Enty):
             p2 = p + self.shape.b.rotated(angl)
             draw_p1 = int(p1.x), int(flipy(p1.y))
             draw_p2 = int(p2.x), int(flipy(p2.y))
-            pygame.draw.lines(screen, self.color, False, [draw_p1, draw_p2])
+            pygame.draw.lines(screen, self.color, False, [draw_p1, draw_p2], 4)
 
     def addCollision(self, space, pt1, pt2, btype):
         if btype == pymunk.Body.STATIC:

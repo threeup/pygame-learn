@@ -5,9 +5,9 @@ from enty import Enty
 
 
 class CircEnty(Enty):
-    def __init__(self, name, color, path):
+    def __init__(self, name, color, radius, path):
         Enty.__init__(self, name)
-        self.radius = 50
+        self.radius = radius
         self.heading = 0
         self.color = color
         if path:
@@ -34,7 +34,7 @@ class CircEnty(Enty):
         return rot_image
 
     def draw(self, screen, flipy):
-        p = self.body.position
+        p = self.get_pos()
         if self.img:
             c = self.img.get_rect().center
             draw_x = int(p.x) - c[0]

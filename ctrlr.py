@@ -82,7 +82,10 @@ class HumanCtrlr(Ctrlr):
             p = self.list[i].get_pos()
             if self.held[i]:
                 if p.y < 320:
-                    self.list[i].impulse(0, 30)
+                    home_x = 200+110*i
+                    delta_x = home_x-p.x
+                    impulse_x =  max(-10, min(0.25*delta_x, 10))
+                    self.list[i].impulse(impulse_x, 30)
             else:
                 if p.y < 100:
                     self.list[i].set_pos(p.x, 100)
@@ -97,19 +100,11 @@ class AICtrlr(Ctrlr):
         self.delta_y = 0
 
     def tick(self, deltaTime):
-        first_enty = self.list[0]
-        if self.delta_x == 0 and self.delta_y == 0:
-            self.delta_x = 2
-        elif self.delta_x == 2:
-            if first_enty.p.y > 280:
-                self.delta_x = -2
-                self.delta_y = 0
-            elif self.delta_y == 0 and first_enty.p.x > 400:
-                self.delta_y = 5
-        else:
-            if first_enty.p.y < 100:
-                self.delta_x = 2
-                self.delta_y = 0
-            elif self.delta_y == 0 and first_enty.p.x < 200:
-                self.delta_y = -5
-        first_enty.move(self.delta_x, self.delta_y)
+        for i in range(self.count):
+            p = self.list[i].get_pos()
+            if p.y < 100:
+                self.list[i].set_pos(p.x, 100)
+            elif(p.x < 600):
+                self.list[i].set_pos(p.x+10, p.y)
+            else:
+                self.list[i].set_pos(0, p.y)
