@@ -20,7 +20,7 @@ ents = []
 ctrlrs = []
 SAMPLERATE = 44100
 if os.name == 'posix':
-    SAMPLERATE = 4000
+    SAMPLERATE = 8000
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -141,6 +141,7 @@ def main():
     run_physics = True
     paused = False
 
+    last_secs = -1
     # Loop
     while running:
 
@@ -190,7 +191,12 @@ def main():
         scoretext = bigfont.render(scoreline, True, pygame.Color("black"))
         screen.blit(scoretext, (5, 370))
 
-        timeline = "Time " + str(round(mouseball.elapsed_time))
+        secs = round(mouseball.elapsed_time)
+        if secs != last_secs:
+            last_secs = secs
+            if (secs % 10 == 0):
+                print(str(secs)+", Score:"+str(aiCtrlr.score))
+        timeline = "Time " + str(secs)
         timetext = bigfont.render(timeline, True, pygame.Color("black"))
         screen.blit(timetext, (400, 370))
 

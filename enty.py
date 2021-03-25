@@ -29,7 +29,7 @@ class Enty:
     def get_pos(self):
         if self.body:
             return self.body.position
-        return (0, 0)
+        return Vec2d(0, 0)
 
     def impulse(self, x, y):
         if self.body:

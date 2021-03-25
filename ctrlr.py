@@ -35,7 +35,7 @@ class HumanCtrlr(Ctrlr):
 
         volume = 200
         if samplerate < 10000:
-            volume = 10000
+            volume = 150000
 
         for i in range(self.count):
             self.held.append(False)
@@ -90,8 +90,8 @@ class HumanCtrlr(Ctrlr):
                     impulse_x =  max(-10, min(0.25*delta_x, 10))
                     self.list[i].impulse(impulse_x, 30)
             else:
-                if p.y < 100:
-                    self.list[i].set_pos(p.x, 100)
+                if p.y < 60:
+                    self.list[i].set_pos(p.x, 60)
         return
 
 

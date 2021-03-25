@@ -45,7 +45,7 @@ class AICtrlr(Ctrlr):
                 continue
 
             v = enty.get_vel()
-            if p.y < 100 and v.y < 0:
+            if p.y < 70 and v.y < 0:
                 enty.set_vel(v.x, -v.y)
                 v = enty.get_vel()
             elif p.y > 310 and v.y > 0:

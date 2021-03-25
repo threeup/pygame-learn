@@ -45,17 +45,17 @@ def main():
     tone.play()
     
 
-    for i in range(200,6000,500):
-        for j in range(1000,8000,1000):
+    for vol in range(1200,550000,3500):
+        for hz in range(1000,16000,1000):
             for k in range(80,480,80):
-                tone = make_tone(k, i, j)
+                tone = make_tone(k, vol, hz)
 
                 tone.play()
                 pygame.display.flip()
-                title = "play vol:"+str(i)+","+str(k)+" hz"+str(j)
+                title = "play vol:"+str(vol)+","+str(k)+" hz"+str(hz)
                 print(title)
                 pygame.display.set_caption(title)
-                counter = 100000
+                counter = 60000
                 while counter > 0:
                     counter-=1
 
