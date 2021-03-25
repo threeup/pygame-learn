@@ -3,9 +3,9 @@ import pygame
 import numpy as np
 import os
 
-SAMPLERATE = 4000
+SAMPLERATE = 2000
 
-def make_tone(self, freq=1000, volume=30000, length=1):
+def make_tone(self, freq=1000, volume=30000, samplerate=4000, length=1):
     
     num_steps = int(length*SAMPLERATE)
     intro = int(length*SAMPLERATE*0.2)
@@ -40,21 +40,24 @@ def main():
     while pygame.mixer.music.get_busy():
         continue
     
-    tone = make_tone(400)
-    print(tone.get_volume())
-    
-    running = True
+    tone = make_tone(161, 10000, SAMPLERATE)
 
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                running = False
-            else:
+    tone.play()
+    
+
+    for vol in range(200,550000,3500):
+        for hz in range(1000,8000,1000):
+            for k in range(80,480,80):
+                tone = make_tone(k, vol, hz)
+
                 tone.play()
-        pygame.display.flip()
-        pygame.display.set_caption("fps: ")
+                pygame.display.flip()
+                title = "play vol:"+str(vol)+","+str(k)+" hz"+str(j)
+                print(title)
+                pygame.display.set_caption(title)
+                counter = 100000
+                while counter > 0:
+                    counter-=1
 
 if __name__ == "__main__":
     doprof = 0

@@ -3,7 +3,7 @@ import pygame
 import numpy as np
 import os
 
-SAMPLERATE = 4000
+SAMPLERATE = 44100
 
 def make_tone(self, freq=1000, volume=30000, samplerate=4000, length=1):
     

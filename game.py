@@ -97,19 +97,19 @@ def main():
 
     # Entities
     aitarget0 = makeCircleEnt(space, "target0", "red",
-                              None, (0, 0), 10,
+                              "birdred.png", (0, 0), 10,
                               pymunk.Body.DYNAMIC, COLLTYPE_TARGET)
     aitarget1 = makeCircleEnt(space, "target1", "yellow",
-                              None, (0, 0), 10,
+                              "birdyellow.png", (0, 0), 10,
                               pymunk.Body.DYNAMIC, COLLTYPE_TARGET)
     aitarget2 = makeCircleEnt(space, "target2", "green",
-                              None, (0, 0), 10,
+                              "birdgreen.png", (0, 0), 10,
                               pymunk.Body.DYNAMIC, COLLTYPE_TARGET)
     aitarget3 = makeCircleEnt(space, "target3", "blue",
-                              None, (0, 0), 10,
+                              "birdblue.png", (0, 0), 10,
                               pymunk.Body.KINEMATIC, COLLTYPE_TARGET)
     aitarget4 = makeCircleEnt(space, "target4", "brown",
-                              None, (0, 0), 10,
+                              "birdbrown.png", (0, 0), 10,
                               pymunk.Body.KINEMATIC, COLLTYPE_TARGET)
 
     mouseball = makeCircleEnt(space, "mouse", "white",
