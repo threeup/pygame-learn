@@ -3,8 +3,6 @@ import numpy as np
 import scipy.io.wavfile as siow
 from enty import Enty
 
-SAMPLERATE = 44100
-
 class Ctrlr:
     def __init__(self, enty_list):
         self.count = len(enty_list)
@@ -27,26 +25,31 @@ class MouseCtrlr(Ctrlr):
 
 
 class HumanCtrlr(Ctrlr):
-    def __init__(self, enty_list):
+    def __init__(self, enty_list, samplerate):
         # invoking the __init__ of the parent class
         Ctrlr.__init__(self, enty_list)
         self.held = []
         self.sfx_down = []
         self.sfx_up = []
+        self.samplerate = samplerate
+
+        volume = 200
+        if samplerate < 10000:
+            volume = 10000
 
         for i in range(self.count):
             self.held.append(False)
-            self.sfx_down.append(self.make_tone(100+i*100))
-            self.sfx_up.append(self.make_tone(150+i*100))
+            self.sfx_down.append(self.make_tone(111+i*50,volume))
+            self.sfx_up.append(self.make_tone(136+i*50,volume))
 
-    def make_tone(self, freq=1000, volume=10000, length=1):
+    def make_tone(self, freq, volume, length=1):
         
-        num_steps = int(length*SAMPLERATE)
-        intro = int(length*SAMPLERATE*0.2)
+        num_steps = int(length*self.samplerate)
+        intro = int(length*self.samplerate*0.2)
         s = []
 
         for n in range(num_steps):
-            value = np.sin(n * freq * (6.28318/SAMPLERATE) * length)*volume
+            value = np.sin(n * freq * (6.28318/self.samplerate) * length)*volume
             if n < intro:
                 ease = n/intro
                 s.append([value*ease, value*ease])
@@ -92,19 +95,4 @@ class HumanCtrlr(Ctrlr):
         return
 
 
-class AICtrlr(Ctrlr):
-    def __init__(self, enty_list):
-        # invoking the __init__ of the parent class
-        Ctrlr.__init__(self, enty_list)
-        self.delta_x = 0
-        self.delta_y = 0
-
-    def tick(self, deltaTime):
-        for i in range(self.count):
-            p = self.list[i].get_pos()
-            if p.y < 100:
-                self.list[i].set_pos(p.x, 100)
-            elif(p.x < 600):
-                self.list[i].set_pos(p.x+10, p.y)
-            else:
-                self.list[i].set_pos(0, p.y)
+                

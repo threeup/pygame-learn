@@ -8,8 +8,17 @@ class Enty:
         self.name = name
         self.grounded = False
         self.elapsed_time = 0
+        self.fixed_vel = Vec2d(0,0)
+        self.fixed_speed = 0.2
         self.debug = False
         self.body = None
+        self.attach = None
+
+    def set_vel(self, x, y):
+        self.fixed_vel = Vec2d(x,y)
+    
+    def get_vel(self):
+        return self.fixed_vel
 
     def set_pos(self, x, y):
         if self.body:

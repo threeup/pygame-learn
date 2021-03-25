@@ -4,7 +4,7 @@ from pymunk import Vec2d
 from enty import Enty
 
 
-class LineEnty(Enty):
+class EntyLine(Enty):
     def __init__(self, name, color, path):
         Enty.__init__(self, name)
         self.length = 150
@@ -37,8 +37,10 @@ class LineEnty(Enty):
             draw_p2 = int(p2.x), int(flipy(p2.y))
             pygame.draw.lines(screen, self.color, False, [draw_p1, draw_p2], 4)
 
-    def addCollision(self, space, pt1, pt2, btype):
-        if btype == pymunk.Body.STATIC:
+    def addCollision(self, space, pt1, pt2, bodtype, coltype):
+        if bodtype == pymunk.Body.STATIC:
             self.shape = pymunk.Segment(space.static_body, pt1, pt2, 0.0)
             self.shape.friction = 0.99
+            self.shape.collision_type = coltype
+            self.shape.owner = self
             space.add(self.shape)

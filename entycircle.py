@@ -4,7 +4,7 @@ from pymunk import Vec2d
 from enty import Enty
 
 
-class CircEnty(Enty):
+class EntyCircle(Enty):
     def __init__(self, name, color, radius, path):
         Enty.__init__(self, name)
         self.radius = radius
@@ -44,10 +44,12 @@ class CircEnty(Enty):
         else:
             draw_pos = int(p.x), int(flipy(p.y))
             pygame.draw.circle(screen, self.color, draw_pos,
-                               int(self.radius), 12)
+                               int(self.radius), 5)
 
-    def addCollision(self, space, pos, btype):
-        self.body = pymunk.Body(1, 1666, body_type=btype)
+    def addCollision(self, space, pos, bodtype, coltype):
+        self.body = pymunk.Body(1, 1666, body_type=bodtype)
         self.body.position = pos[0], pos[1]
         self.shape = pymunk.Circle(self.body, self.radius, (0, 0))
+        self.shape.collision_type = coltype
+        self.shape.owner = self
         space.add(self.body, self.shape)
