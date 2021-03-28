@@ -1,4 +1,6 @@
 import pygame
+import numpy as np
+import scipy.io.wavfile as siow
 from enty import Enty
 
 class Ctrlr:
@@ -27,19 +29,56 @@ class HumanCtrlr(Ctrlr):
         # invoking the __init__ of the parent class
         Ctrlr.__init__(self, enty_list)
         self.held = []
+        self.sfx_down = []
+        self.sfx_up = []
+        self.samplerate = samplerate
+
+        volume = 200
+        if samplerate < 10000:
+            volume = 150000
+
         for i in range(self.count):
             self.held.append(False)
+            self.sfx_down.append(self.make_tone(111+i*50,volume))
+            self.sfx_up.append(self.make_tone(136+i*50,volume))
 
+    def make_tone(self, freq, volume, length=1):
+        
+        num_steps = int(length*self.samplerate)
+        intro = int(length*self.samplerate*0.2)
+        s = []
+
+        for n in range(num_steps):
+            value = np.sin(n * freq * (6.28318/self.samplerate) * length)*volume
+            if n < intro:
+                ease = n/intro
+                s.append([value*ease, value*ease])
+            elif (num_steps-n) < intro:
+                ease = (num_steps-n)/intro
+                s.append([value*ease, value*ease])
+            else:
+                s.append([value, value])
+        buffer = np.array(s)
+        return pygame.sndarray.make_sound(buffer.astype(np.int16))
+
+    def load_sound(self, name):
+        _, buffer = siow.read(name)
+        buffer = np.repeat(buffer.reshape(len(buffer), 1), 2, axis=1)
+        return pygame.sndarray.make_sound(buffer)
 
     def handle_event(self, event):
         if event.type == pygame.JOYBUTTONDOWN:
             for i in range(self.count):
                 if event.button == i:
                     self.held[i] = True
+                    self.sfx_down[i].set_volume(1)
+                    self.sfx_down[i].play()
         elif event.type == pygame.JOYBUTTONUP:
             for i in range(self.count):
                 if event.button == i:
                     self.held[i] = False
+                    self.sfx_up[i].set_volume(1)
+                    self.sfx_up[i].play()
 
     def tick(self, deltaTime):
         for i in range(self.count):

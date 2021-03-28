@@ -1,9 +1,8 @@
 import pygame
+import pymunk
+from pymunk import Vec2d
 from enty import Enty
-from cnphy.body import Body
-from cnphy.shape import Shape, Segment
-from cnphy.space import Space
-from cnphy.vec2d import Vec2d
+
 
 class EntyLine(Enty):
     def __init__(self, name, color, path):
@@ -32,18 +31,16 @@ class EntyLine(Enty):
             draw_center = draw_x, draw_y
             screen.blit(self.img, draw_center)
         else:
-            p1 = p + self.shape.pt1.rotated(angl)
-            p2 = p + self.shape.pt2.rotated(angl)
+            p1 = p + self.shape.a.rotated(angl)
+            p2 = p + self.shape.b.rotated(angl)
             draw_p1 = int(p1.x), int(flipy(p1.y))
             draw_p2 = int(p2.x), int(flipy(p2.y))
             pygame.draw.lines(screen, self.color, False, [draw_p1, draw_p2], 4)
 
     def addCollision(self, space, pt1, pt2, bodtype, coltype):
-        if bodtype == Body.STATIC:
-            self.body = space.static_body
-        else:
-            self.body = Body(bodtype)
-            
-        self.shape = Segment(self.body, coltype, pt1, pt2)
-        self.shape.owner = self
-        space.add(self.body, self.shape)
+        if bodtype == pymunk.Body.STATIC:
+            self.shape = pymunk.Segment(space.static_body, pt1, pt2, 0.0)
+            self.shape.friction = 0.99
+            self.shape.collision_type = coltype
+            self.shape.owner = self
+            space.add(self.shape)

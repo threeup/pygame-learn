@@ -3,11 +3,11 @@ from entycircle import EntyCircle
 from enty import Enty
 from ctrlrai import AICtrlr
 from ctrlr import Ctrlr, HumanCtrlr, MouseCtrlr
-from cnphy.body import Body
-from cnphy.space import Space
-from cnphy.vec2d import Vec2d
-
 import pygame
+
+import pymunk
+from pymunk import Vec2d
+
 import os
 
 # Physics collision types
@@ -51,9 +51,9 @@ def pawn_target_func(arbiter, space, data):
     id1 = s1.owner.name[-1]
     id2 = s2.owner.name[-1]
     if(id1 == id2):
-        if bodtype1 == Body.DYNAMIC:
+        if bodtype1 == pymunk.Body.DYNAMIC:
             s2.owner.attach = s1.owner
-        elif bodtype2 == Body.DYNAMIC:
+        elif bodtype2 == pymunk.Body.DYNAMIC:
             s1.owner.attach = s2.owner
         return False
     return True
@@ -76,10 +76,12 @@ def main():
         joysticks[j].init()
 
     # Physics stuff
-    space = Space()
+    space = pymunk.Space()
     space.gravity = 0.0, -981.0
 
-    space.add_collision_handler(COLLTYPE_PAWN, COLLTYPE_TARGET, pawn_target_func)
+    space.add_collision_handler(
+        COLLTYPE_PAWN, COLLTYPE_TARGET
+    ).pre_solve = pawn_target_func
 
     # World
     raw_bg_img = pygame.image.load("bg.jpg")
@@ -87,45 +89,45 @@ def main():
         raw_bg_img, (620, 396))
 
     _ = makeLineEnt(space, "leftWall", "orange",
-                    None, Vec2d(110, 30), Vec2d(110, 550), 
-                    Body.STATIC)
+                    None, (110, 30), (110, 550), 
+                    pymunk.Body.STATIC)
     _ = makeLineEnt(space, "rightWall", "orange",
-                    None, Vec2d(610, 30), Vec2d(610, 550), 
-                    Body.STATIC)
+                    None, (610, 30), (610, 550), 
+                    pymunk.Body.STATIC)
 
     # Entities
     aitarget0 = makeCircleEnt(space, "target0", "red",
-                              "birdred.png", Vec2d(0, 0), 10,
-                              Body.KINEMATIC, COLLTYPE_TARGET)
+                              "birdred.png", (0, 0), 10,
+                              pymunk.Body.DYNAMIC, COLLTYPE_TARGET)
     aitarget1 = makeCircleEnt(space, "target1", "yellow",
-                              "birdyellow.png", Vec2d(0, 0), 10,
-                              Body.KINEMATIC, COLLTYPE_TARGET)
+                              "birdyellow.png", (0, 0), 10,
+                              pymunk.Body.DYNAMIC, COLLTYPE_TARGET)
     aitarget2 = makeCircleEnt(space, "target2", "green",
-                              "birdgreen.png", Vec2d(0, 0), 10,
-                              Body.KINEMATIC, COLLTYPE_TARGET)
+                              "birdgreen.png", (0, 0), 10,
+                              pymunk.Body.DYNAMIC, COLLTYPE_TARGET)
     aitarget3 = makeCircleEnt(space, "target3", "blue",
-                              "birdblue.png", Vec2d(0, 0), 10,
-                              Body.KINEMATIC, COLLTYPE_TARGET)
+                              "birdblue.png", (0, 0), 10,
+                              pymunk.Body.KINEMATIC, COLLTYPE_TARGET)
     aitarget4 = makeCircleEnt(space, "target4", "brown",
-                              "birdbrown.png", Vec2d(0, 0), 10,
-                              Body.KINEMATIC, COLLTYPE_TARGET)
+                              "birdbrown.png", (0, 0), 10,
+                              pymunk.Body.KINEMATIC, COLLTYPE_TARGET)
 
     mouseball = makeCircleEnt(space, "mouse", "white",
-                              "hoop.png", Vec2d(10, 10), 40, 
-                              Body.KINEMATIC)
+                              "hoop.png", (10, 10), 40, 
+                              pymunk.Body.KINEMATIC)
 
     pawn0 = makeCircleEnt(space, "pawn0", "red",
-                          "hoopred.png", Vec2d(200+110*0, 320), 50,
-                          Body.DYNAMIC, COLLTYPE_PAWN)
+                          "hoopred.png", (200+110*0, 320), 50,
+                          pymunk.Body.DYNAMIC, COLLTYPE_PAWN)
     pawn1 = makeCircleEnt(space, "pawn1", "yellow",
-                          "hoopyellow.png", Vec2d(200+110*1, 320), 50,
-                          Body.DYNAMIC, COLLTYPE_PAWN)
+                          "hoopyellow.png", (200+110*1, 320), 50,
+                          pymunk.Body.DYNAMIC, COLLTYPE_PAWN)
     pawn2 = makeCircleEnt(space, "pawn2", "green",
-                          "hoopgreen.png", Vec2d(200+110*2, 320), 50,
-                          Body.DYNAMIC, COLLTYPE_PAWN)
+                          "hoopgreen.png", (200+110*2, 320), 50,
+                          pymunk.Body.DYNAMIC, COLLTYPE_PAWN)
     pawn3 = makeCircleEnt(space, "pawn3", "blue",
-                          "hoopblue.png", Vec2d(200+110*3, 320), 50,
-                          Body.DYNAMIC, COLLTYPE_PAWN)
+                          "hoopblue.png", (200+110*3, 320), 50,
+                          pymunk.Body.DYNAMIC, COLLTYPE_PAWN)
 
     # Controller
     aiCtrlr = AICtrlr([aitarget0, aitarget1, aitarget2, aitarget3, aitarget4])

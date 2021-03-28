@@ -1,6 +1,7 @@
 import pygame
+import pymunk
+from pymunk import Vec2d
 
-from cnphy.vec2d import Vec2d
 
 class Enty:
     def __init__(self, name):
@@ -23,7 +24,7 @@ class Enty:
         if self.body:
             self.grounded = True
             self.body.velocity = Vec2d(0, 0)
-            self.body.position = Vec2d(x, y)
+            self.body.position = x, y
 
     def get_pos(self):
         if self.body:

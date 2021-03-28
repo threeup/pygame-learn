@@ -1,4 +1,6 @@
 import pygame
+import random
+from pymunk import Vec2d
 
 from enty import Enty
 from ctrlr import Ctrlr
@@ -12,14 +14,12 @@ class AICtrlr(Ctrlr):
         self.delta_y = 0
         self.score = 0
         for i in range(self.count):
-            self.reset(self.list[i],i)
+            self.reset(self.list[i])
 
-    def reset(self, enty, offset):
+    def reset(self, enty):
         enty.attach = None
-        #enty.set_pos(0, random.randrange(300, 350))
-        enty.set_pos(0,300+5*offset)
-        #enty.set_vel(random.randrange(8, 13), random.randrange(-5, 5))
-        enty.set_vel(9,1)
+        enty.set_pos(0, random.randrange(300, 350))
+        enty.set_vel(random.randrange(8, 13), random.randrange(-5, 5))
 
     def tick(self, deltaTime):
         for i in range(self.count):
@@ -28,10 +28,11 @@ class AICtrlr(Ctrlr):
             atch = enty.attach
             if atch != None:
                 ap = atch.get_pos()
-                delta_dir, delta_mag = (ap-p).normalized_and_length()
+                delta = Vec2d(ap.x-p.x, ap.y-p.y)
+                delta_dir, delta_mag = delta.normalized_and_length()
                 if delta_mag < 10:
                     self.score += 1
-                    self.reset(enty, i)
+                    self.reset(enty)
                     continue
 
                 spd = 4
@@ -40,8 +41,7 @@ class AICtrlr(Ctrlr):
 
             if (p.x > 600):
                 enty.set_pos(0, p.y)
-                #enty.set_vel(random.randrange(8, 13), random.randrange(-5, 5))
-                enty.set_vel(9,1)
+                enty.set_vel(random.randrange(8, 13), random.randrange(-5, 5))
                 continue
 
             v = enty.get_vel()

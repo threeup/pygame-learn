@@ -1,10 +1,7 @@
 import pygame
+import pymunk
+from pymunk import Vec2d
 from enty import Enty
-
-from cnphy.body import Body
-from cnphy.shape import Shape, Circle
-from cnphy.space import Space
-from cnphy.vec2d import Vec2d
 
 
 class EntyCircle(Enty):
@@ -50,8 +47,9 @@ class EntyCircle(Enty):
                                int(self.radius), 5)
 
     def addCollision(self, space, pos, bodtype, coltype):
-        self.body = Body(1666, bodtype)
-        self.body.set_pos(pos)
-        self.shape = Circle(self.body, coltype, self.radius)
+        self.body = pymunk.Body(1, 1666, body_type=bodtype)
+        self.body.position = pos[0], pos[1]
+        self.shape = pymunk.Circle(self.body, self.radius, (0, 0))
+        self.shape.collision_type = coltype
         self.shape.owner = self
         space.add(self.body, self.shape)
