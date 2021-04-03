@@ -1,3 +1,4 @@
 import cnphy.body
-import cnphy.space 
+import cnphy.shape
+import cnphy.space
 import cnphy.vec2d

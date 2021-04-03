@@ -19,12 +19,10 @@ class EntyCircle(Enty):
                 raw_img, (2*self.radius, 2*self.radius))
         else:
             self.img = None
-            
-
 
     def tick(self, delta):
         Enty.tick(self, delta)
-        if self.grounded == False:
+        if self.grounded is not False:
             self.heading = (self.heading + 3) % 360
 
     def rot_center(self, image, angle):
@@ -37,21 +35,21 @@ class EntyCircle(Enty):
         return rot_image
 
     def draw(self, screen, flipy):
-        p = self.get_pos()
+        enty_pos = self.get_pos()
         if self.img:
-            c = self.img.get_rect().center
-            draw_x = int(p.x) - c[0]
-            draw_y = int(flipy(p.y)) - c[1]
+            enty_center = self.img.get_rect().center
+            draw_x = int(enty_pos.x) - enty_center[0]
+            draw_y = int(flipy(enty_pos.y)) - enty_center[1]
             rot_img = self.rot_center(self.img, self.heading)
             screen.blit(rot_img, (draw_x, draw_y))
         else:
-            draw_pos = int(p.x), int(flipy(p.y))
+            draw_pos = int(enty_pos.x), int(flipy(enty_pos.y))
             pygame.draw.circle(screen, self.color, draw_pos,
                                int(self.radius), 5)
 
-    def addCollision(self, space, pos, bodtype, coltype):
-        self.body = Body(1666, bodtype)
+    def add_collision(self, space, pos, bodtype, coltype):
+        self.body = Body(space, 1666, bodtype)
         self.body.set_pos(pos)
-        self.shape = Circle(self.body, coltype, self.radius)
+        self.shape = Circle(self.body.munkbody, coltype, self.radius)
         self.shape.owner = self
         space.add(self.body, self.shape)

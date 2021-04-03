@@ -1,17 +1,35 @@
-from cnphy.vec2d import Vec2d
+import pymunk
+
 
 class Body(object):
     STATIC = 100,
-    KINEMATIC = 101, 
+    KINEMATIC = 101,
     DYNAMIC = 102,
 
-    def __init__(self, weight, body_type):
-        self.size = 0
-        self.body_type = body_type
-        self.position = Vec2d(0,0)
-        self.velocity = Vec2d(0,0)
-        self.angle = 90
+    def __init__(self, space, weight, body_type):
+
+        if body_type == self.STATIC:
+            munk_type = pymunk.Body.STATIC
+            self.munkbody = space.get_static_body()
+        elif body_type == self.KINEMATIC:
+            munk_type = pymunk.Body.KINEMATIC
+            self.munkbody = pymunk.Body(1, weight, munk_type)
+        elif body_type == self.DYNAMIC:
+            munk_type = pymunk.Body.DYNAMIC
+            self.munkbody = pymunk.Body(1, weight, munk_type)
+        self.init = True
+
+    def get_mass(self):
+        return self.munkbody.mass
 
     def set_pos(self, pos):
-        self.position.x = pos.x
-        self.position.y = pos.y
+        self.munkbody.position = pos.x, pos.y
+
+    def set_vel(self, vel):
+        self.munkbody.velocity = vel.x, vel.y
+
+    def impulse(self, vec):
+        self.munkbody.apply_impulse_at_local_point(vec.toTuple())
+
+    def get_pos(self):
+        return self.munkbody.position

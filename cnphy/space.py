@@ -1,21 +1,32 @@
-from cnphy.body import Body
+import pymunk
 
 
 class Space(object):
     def __init__(self):
-        self.bodies = []
-        self.shapes = []
-        self.funcs = []
-        self.gravity = (0,0)
-        self.time = 0
-        self.static_body = Body(-1, Body.STATIC)
-    
+        self.munkspace = pymunk.Space()
+        self.munkspace.gravity = 0.0, -981.0
+
     def add(self, body, shape):
-        self.bodies.append(body)
-        self.shapes.append(shape)
+        if body is not None:
+            self.munkspace.add(body.munkbody, shape.munkshape)
+        else:
+            self.munkspace.add(shape.munkshape)
 
-    def add_collision_handler(self, a, b, func):
-        self.funcs.append(func)
+    def add_collision_handler(self, type1, type2, func):
+        self.munkspace.add_collision_handler(type1, type2).pre_solve =  func
 
-    def step(self, dt):
-        self.time += dt
+    def get_static_body(self):
+        return self.munkspace.static_body
+
+    def aabboverlap(self, lhs, rhs):
+        box_lhs = lhs.aabb()
+        box_rhs = rhs.aabb()
+        print(box_lhs)
+        x_left = max(box_lhs.start.x, box_rhs.start.x)
+        y_top = max(box_lhs.start.y, box_rhs.start.y)
+        x_right = min(box_lhs.end.x, box_rhs.end.x)
+        y_bottom = min(box_lhs.end.y, box_rhs.end.y)
+        return x_right > x_left and y_bottom > y_top
+
+    def step(self, delta):
+        self.munkspace.step(delta)

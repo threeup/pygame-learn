@@ -17,7 +17,7 @@ COLLTYPE_TARGET = 2
 
 
 ents = []
-ctrlrs = []
+controllers = []
 SAMPLERATE = 44100
 if os.name == 'posix':
     SAMPLERATE = 8000
@@ -31,30 +31,32 @@ def flipy(y):
 
 def makeLineEnt(space, name, color, path, pt1, pt2, bodtype, coltype=COLLTYPE_DEFAULT):
     result = EntyLine(name, pygame.Color(color), path)
-    result.addCollision(space, pt1, pt2, bodtype, coltype)
+    result.add_collision(space, pt1, pt2, bodtype, coltype)
     ents.append(result)
     return result
 
 
 def makeCircleEnt(space, name, color, path, pos, radius, bodtype, coltype=COLLTYPE_DEFAULT):
     result = EntyCircle(name, pygame.Color(color), radius, path)
-    result.addCollision(space, pos, bodtype, coltype)
+    result.add_collision(space, pos, bodtype, coltype)
     ents.append(result)
     return result
 
 
-def pawn_target_func(arbiter, space, data):
+def pawn_target_func(arbiter, _space, _data):
     """Simple callback that increases the radius of circles touching the mouse"""
-    s1, s2 = arbiter.shapes
-    bodtype1 = s1.body.body_type
-    bodtype2 = s2.body.body_type
-    id1 = s1.owner.name[-1]
-    id2 = s2.owner.name[-1]
+    shape1, shape2 = arbiter.shapes
+    cnshape1 = shape1.cnshape
+    cnshape2 = shape2.cnshape
+    bodtype1 = shape1.body.body_type
+    bodtype2 = shape2.body.body_type
+    id1 = cnshape1.owner.name[-1]
+    id2 = cnshape2.owner.name[-1]
     if(id1 == id2):
         if bodtype1 == Body.DYNAMIC:
-            s2.owner.attach = s1.owner
+            cnshape2.owner.attach = cnshape1.owner
         elif bodtype2 == Body.DYNAMIC:
-            s1.owner.attach = s2.owner
+            cnshape1.owner.attach = cnshape2.owner
         return False
     return True
 
@@ -128,12 +130,12 @@ def main():
                           Body.DYNAMIC, COLLTYPE_PAWN)
 
     # Controller
-    aiCtrlr = AICtrlr([aitarget0, aitarget1, aitarget2, aitarget3, aitarget4])
-    ctrlrs.append(aiCtrlr)
-    mouseCtrlr = MouseCtrlr([mouseball], flipy)
-    ctrlrs.append(mouseCtrlr)
-    humanCtrlr = HumanCtrlr([pawn0, pawn1, pawn2, pawn3], SAMPLERATE)
-    ctrlrs.append(humanCtrlr)
+    ai_controller = AICtrlr([aitarget0, aitarget1, aitarget2, aitarget3, aitarget4])
+    controllers.append(ai_controller)
+    mouse_controller = MouseCtrlr([mouseball], flipy)
+    controllers.append(mouse_controller)
+    human_controller = HumanCtrlr([pawn0, pawn1, pawn2, pawn3], SAMPLERATE)
+    controllers.append(human_controller)
 
     # GameState
     run_physics = True
@@ -143,14 +145,14 @@ def main():
     # Loop
     while running:
 
-        mouseCtrlr.handle_event(0)
+        mouse_controller.handle_event(0)
         for event in pygame.event.get():
             if (event.type == pygame.JOYAXISMOTION or
                 event.type == pygame.JOYHATMOTION or
                 event.type == pygame.JOYBUTTONDOWN or
                     event.type == pygame.JOYBUTTONUP):
                 if event.joy == 0:
-                    humanCtrlr.handle_event(event)
+                    human_controller.handle_event(event)
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -167,14 +169,14 @@ def main():
 
         # Update physics
         if run_physics:
-            dt = 1.0 / 60.0
+            delta = 1.0 / 60.0
             steps = 1
             for _ in range(steps):
                 for ent in ents:
-                    ent.tick(dt)
-                for ctrlr in ctrlrs:
-                    ctrlr.tick(dt)
-                space.step(dt)
+                    ent.tick(delta)
+                for ctrlr in controllers:
+                    ctrlr.tick(delta)
+                space.step(delta)
 
         # Draw stuff
         screen.blit(bg_img, (0, 0))
@@ -185,7 +187,7 @@ def main():
         text = smfont.render(line, True, pygame.Color("gray"))
         screen.blit(text, (5, 5))
         bigfont = pygame.font.Font(None, 32)
-        scoreline = "Score " + str(aiCtrlr.score)
+        scoreline = "Score " + str(ai_controller.score)
         scoretext = bigfont.render(scoreline, True, pygame.Color("black"))
         screen.blit(scoretext, (5, 370))
 
@@ -193,7 +195,7 @@ def main():
         if secs != last_secs:
             last_secs = secs
             if (secs % 10 == 0):
-                print(str(secs)+", Score:"+str(aiCtrlr.score))
+                print(str(secs)+", Score:"+str(ai_controller.score))
         timeline = "Time " + str(secs)
         timetext = bigfont.render(timeline, True, pygame.Color("black"))
         screen.blit(timetext, (400, 370))
@@ -209,6 +211,4 @@ def main():
 
 
 if __name__ == "__main__":
-    doprof = 0
-    if not doprof:
-        main()
+    main()
