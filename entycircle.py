@@ -1,13 +1,15 @@
+""" holds EntyCircle class """
 import pygame
 from enty import Enty
 
 from cnphy.body import Body
-from cnphy.shape import Shape, Circle
-from cnphy.space import Space
-from cnphy.vec2 import Vec2
+from cnphy.shape import Circle
 
 
 class EntyCircle(Enty):
+    """
+    A class which represents a base movable drawable circular entity
+    """
     def __init__(self, name, color, radius, path):
         Enty.__init__(self, name)
         self.radius = radius
@@ -21,6 +23,7 @@ class EntyCircle(Enty):
             self.img = None
 
     def tick(self, delta):
+        """an event which represents time elapsed"""
         Enty.tick(self, delta)
         if self.grounded is not False:
             self.heading = (self.heading + 3) % 360
@@ -35,6 +38,7 @@ class EntyCircle(Enty):
         return rot_image
 
     def draw(self, screen, flipy):
+        """draws a circle using drawing library"""
         enty_pos = self.get_pos()
         if self.img:
             enty_center = self.img.get_rect().center
@@ -48,6 +52,7 @@ class EntyCircle(Enty):
                                int(self.radius), 5)
 
     def add_collision(self, space, pos, bodtype, coltype):
+        """create physics classes and attached to the physics simulation"""
         self.body = Body(space, 1666, bodtype)
         self.body.set_pos(pos)
         self.shape = Circle(self.body.munkbody, coltype, self.radius)

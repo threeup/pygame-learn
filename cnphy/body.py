@@ -1,7 +1,12 @@
+""" holds body class """
 import pymunk
+from cnphy.vec2 import Vec2
 
 
 class Body(object):
+    """
+    A class to represent a physics body
+    """
     STATIC = 100,
     KINEMATIC = 101,
     DYNAMIC = 102,
@@ -20,6 +25,10 @@ class Body(object):
         self.init = True
 
     def get_body_type(self):
+        '''
+        Returns the type in cn foormat
+        < (cnbody.Body.STATIC | KINEMATIC | DYNAMIC)
+        '''
         if self.munkbody.body_type == pymunk.Body.STATIC:
             return self.STATIC
         elif self.munkbody.body_type == pymunk.Body.KINEMATIC:
@@ -28,16 +37,37 @@ class Body(object):
             return self.DYNAMIC
 
     def get_mass(self):
+        '''
+        Returns the mass
+        < (float)
+        '''
         return self.munkbody.mass
 
     def set_pos(self, pos):
+        '''
+        Assigns a position
+        > (Vec2)
+        '''
         self.munkbody.position = pos.x, pos.y
 
     def set_vel(self, vel):
+        '''
+        Assigns a velocity
+        > (Vec2)
+        '''
         self.munkbody.velocity = vel.x, vel.y
 
     def impulse(self, vec):
+        '''
+        Applies an impules at a local point
+        > (Vec2)
+        '''
         self.munkbody.apply_impulse_at_local_point(vec.to_tuple())
 
     def get_pos(self):
-        return self.munkbody.position
+        '''
+        Returns the position
+        < (Vec2)
+        '''
+        munkpos = self.munkbody.position
+        return Vec2(munkpos.x, munkpos.y)

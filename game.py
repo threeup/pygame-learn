@@ -1,3 +1,4 @@
+""" holds a bunch of stuff """
 import os
 import pygame
 
@@ -23,12 +24,13 @@ if os.name == 'posix':
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
-def flipy(y):
+def flipy(value):
     """Small hack to convert chipmunk physics to pygame coordinates"""
-    return -y + 380
+    return -value + 380
 
 
 def make_line(space, name, color, path, pt1, pt2, bodtype, coltype=COLLTYPE_DEFAULT):
+    """Create a line segment entity and attach to physics simulation"""
     result = EntyLine(name, pygame.Color(color), path)
     result.add_collision(space, pt1, pt2, bodtype, coltype)
     ents.append(result)
@@ -36,6 +38,7 @@ def make_line(space, name, color, path, pt1, pt2, bodtype, coltype=COLLTYPE_DEFA
 
 
 def make_circle(space, name, color, path, pos, radius, bodtype, coltype=COLLTYPE_DEFAULT):
+    """Create a circle entity and attach to physics simulation"""
     result = EntyCircle(name, pygame.Color(color), radius, path)
     result.add_collision(space, pos, bodtype, coltype)
     ents.append(result)
@@ -62,6 +65,7 @@ def pawn_target_func(arbiter, _space, _data):
 
 
 def main():
+    """main"""
     pygame.mixer.pre_init(SAMPLERATE, -16, 2, 64)
     pygame.mixer.init()
     pygame.init()

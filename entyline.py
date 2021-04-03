@@ -1,3 +1,4 @@
+""" holds EntyLine class """
 import pygame
 from enty import Enty
 from cnphy.body import Body
@@ -5,6 +6,9 @@ from cnphy.shape import Segment
 
 
 class EntyLine(Enty):
+    """
+    A class which represents a base movable drawable line segment entity
+    """
     def __init__(self, name, color, path):
         Enty.__init__(self, name)
         self.length = 150
@@ -18,9 +22,11 @@ class EntyLine(Enty):
             self.img = None
 
     def tick(self, delta):
+        """an event which represents time elapsed"""
         Enty.tick(self, delta)
 
     def draw(self, screen, flipy):
+        """draws a line using drawing library"""
         munkshape = self.shape.munkshape
         munkbody = self.body.munkbody
         body_pos = munkbody.position
@@ -40,6 +46,7 @@ class EntyLine(Enty):
                               draw_point1, draw_point2], 4)
 
     def add_collision(self, space, pt1, pt2, bodtype, coltype):
+        """create physics classes and attached to the physics simulation"""
         self.body = Body(space, 2000, bodtype)
         self.shape = Segment(self.body.munkbody, coltype, pt1, pt2)
         self.shape.owner = self

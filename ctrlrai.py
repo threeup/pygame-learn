@@ -1,3 +1,4 @@
+""" holds AICtrlr class """
 import random
 
 from ctrlr import Ctrlr
@@ -5,6 +6,9 @@ from cnphy.vec2 import Vec2
 
 
 class AICtrlr(Ctrlr):
+    """
+    A class which manipulates controlled entities using the ai algorithm
+    """
     def __init__(self, enty_list):
         # invoking the __init__ of the parent class
         Ctrlr.__init__(self, enty_list)
@@ -15,6 +19,7 @@ class AICtrlr(Ctrlr):
             self.reset(self.list[i])
 
     def reset(self, enty):
+        '''Sets some state fields to a neutral reset state'''
         enty.attach = None
         enty.set_pos(Vec2(0, random.randrange(300, 350)))
         enty.set_fixed_vel(
@@ -22,6 +27,7 @@ class AICtrlr(Ctrlr):
                   random.randrange(-5, 5)))
 
     def tick(self, _delta):
+        '''Manipulates the all controlled entity based on prior decisions and limits'''
         for i in range(self.count):
             enty = self.list[i]
             enty_pos = enty.get_pos()
