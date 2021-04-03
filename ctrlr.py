@@ -1,6 +1,6 @@
 import pygame
 from enty import Enty
-from cnphy.vec2d import Vec2d
+from cnphy.vec2 import Vec2
 
 class Ctrlr:
     def __init__(self, enty_list):
@@ -20,7 +20,7 @@ class MouseCtrlr(Ctrlr):
 
     def tick(self, _delta):
         first_enty = self.list[0]
-        first_enty.set_pos(Vec2d(self.mousep[0], self.flipy(self.mousep[1])))
+        first_enty.set_pos(Vec2(self.mousep[0], self.flipy(self.mousep[1])))
 
 
 class HumanCtrlr(Ctrlr):
@@ -50,10 +50,10 @@ class HumanCtrlr(Ctrlr):
                     home_x = 200+110*i
                     delta_x = home_x-position.x
                     impulse_x =  max(-10, min(0.25*delta_x, 10))
-                    self.list[i].impulse(Vec2d(impulse_x, 30))
+                    self.list[i].impulse(Vec2(impulse_x, 30))
             else:
                 if position.y < 60:
-                    self.list[i].set_pos(Vec2d(position.x, 60))
+                    self.list[i].set_pos(Vec2(position.x, 60))
         return
 
 

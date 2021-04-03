@@ -1,6 +1,6 @@
 import pygame
 
-from cnphy.vec2d import Vec2d
+from cnphy.vec2 import Vec2
 
 
 class Enty:
@@ -8,7 +8,7 @@ class Enty:
         self.name = name
         self.grounded = False
         self.elapsed_time = 0
-        self.fixed_vel = Vec2d(0, 0)
+        self.fixed_vel = Vec2(0, 0)
         self.fixed_speed = 0.2
         self.debug = False
         self.body = None
@@ -24,13 +24,14 @@ class Enty:
     def set_pos(self, pos):
         if self.body:
             self.grounded = True
-            self.body.set_vel(Vec2d(0, 0))
+            self.body.set_vel(Vec2(0, 0))
             self.body.set_pos(pos)
 
     def get_pos(self):
         if self.body:
-            return self.body.get_pos()
-        return Vec2d(0, 0)
+            munkpos = self.body.get_pos()
+            return Vec2(munkpos.x, munkpos.y)
+        return Vec2(0, 0)
 
     def impulse(self, vec):
         if self.body:

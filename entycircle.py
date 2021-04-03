@@ -4,7 +4,7 @@ from enty import Enty
 from cnphy.body import Body
 from cnphy.shape import Shape, Circle
 from cnphy.space import Space
-from cnphy.vec2d import Vec2d
+from cnphy.vec2 import Vec2
 
 
 class EntyCircle(Enty):
