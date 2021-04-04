@@ -2,9 +2,9 @@
 import math
 
 class Vec2:
-    """
+    '''
     A two dimensional vector composed of two floats
-    """
+    '''
     def __init__(self, x, y):
         self.x = x
         self.y = y

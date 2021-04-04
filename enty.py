@@ -1,13 +1,13 @@
-""" holds Enty class """
+''' holds Enty class '''
 import pygame
 
 from cnphy.vec2 import Vec2
 
 
 class Enty:
-    """
+    '''
     A class which represents a base movable drawable entity
-    """
+    '''
     def __init__(self, name):
         self.name = name
         self.grounded = False

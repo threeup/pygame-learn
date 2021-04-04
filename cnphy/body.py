@@ -1,12 +1,12 @@
-""" holds body class """
+''' holds body class '''
 import pymunk
 from cnphy.vec2 import Vec2
 
 
 class Body(object):
-    """
+    '''
     A class to represent a physics body
-    """
+    '''
     STATIC = 100,
     KINEMATIC = 101,
     DYNAMIC = 102,

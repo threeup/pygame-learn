@@ -1,11 +1,11 @@
-""" holds space class """
+''' holds space class '''
 import pymunk
 
 
 class Space(object):
-    """
+    '''
     A class to represent a physics environment with shapes and bodies
-    """
+    '''
     def __init__(self):
         self.munkspace = pymunk.Space()
         self.munkspace.gravity = 0.0, -981.0

@@ -1,22 +1,24 @@
-""" holds AICtrlr class """
+''' holds AICtrlr class '''
 import random
 
 from ctrlr import Ctrlr
 from cnphy.vec2 import Vec2
 
 
-class AICtrlr(Ctrlr):
-    """
-    A class which manipulates controlled entities using the ai algorithm
-    """
-    def __init__(self, enty_list):
+class AgentCtrlr(Ctrlr):
+    '''
+    A class which manipulates controlled entities using the agent algorithm
+    '''
+    def __init__(self):
         # invoking the __init__ of the parent class
-        Ctrlr.__init__(self, enty_list)
+        Ctrlr.__init__(self)
         self.delta_x = 0
         self.delta_y = 0
         self.score = 0
-        for i in range(self.count):
-            self.reset(self.list[i])
+
+    def add_enty(self, enty):
+        Ctrlr.add_enty(self, enty)
+        self.reset(enty)
 
     def reset(self, enty):
         '''Sets some state fields to a neutral reset state'''
@@ -27,7 +29,7 @@ class AICtrlr(Ctrlr):
                   random.randrange(-5, 5)))
 
     def tick(self, _delta):
-        '''Manipulates the all controlled entity based on prior decisions and limits'''
+        '''Manipulates the all controlled entities based on prior decisions and limits'''
         for i in range(self.count):
             enty = self.list[i]
             enty_pos = enty.get_pos()

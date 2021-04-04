@@ -1,22 +1,17 @@
-""" holds a bunch of stuff """
+''' holds a bunch of stuff '''
 import os
 import pygame
 
+from world import World
 from entyline import EntyLine
-from entycircle import EntyCircle
-from ctrlrai import AICtrlr
-from ctrlr import HumanCtrlr, MouseCtrlr
+from ctrlrref import RefCtrlr
+from ctrlragent import AgentCtrlr
+from ctrlrhuman import HumanCtrlr, MouseCtrlr
 from cnphy.body import Body
 from cnphy.space import Space
 from cnphy.vec2 import Vec2
 
-# Physics collision types
-COLLTYPE_DEFAULT = 0
-COLLTYPE_PAWN = 1
-COLLTYPE_TARGET = 2
 
-
-ents = []
 controllers = []
 SAMPLERATE = 44100
 if os.name == 'posix':
@@ -25,47 +20,21 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 def flipy(value):
-    """Small hack to convert chipmunk physics to pygame coordinates"""
+    '''Small hack to convert chipmunk physics to pygame coordinates'''
     return -value + 380
 
 
-def make_line(space, name, color, path, pt1, pt2, bodtype, coltype=COLLTYPE_DEFAULT):
-    """Create a line segment entity and attach to physics simulation"""
+def make_line(world, name, color, path, pt1, pt2, bodtype, coltype):
+    '''Create a line segment entity and attach to physics simulation'''
+    space = world.space
     result = EntyLine(name, pygame.Color(color), path)
     result.add_collision(space, pt1, pt2, bodtype, coltype)
-    ents.append(result)
+    world.ents.append(result)
     return result
-
-
-def make_circle(space, name, color, path, pos, radius, bodtype, coltype=COLLTYPE_DEFAULT):
-    """Create a circle entity and attach to physics simulation"""
-    result = EntyCircle(name, pygame.Color(color), radius, path)
-    result.add_collision(space, pos, bodtype, coltype)
-    ents.append(result)
-    return result
-
-
-def pawn_target_func(arbiter, _space, _data):
-    """Simple callback that increases the radius of circles touching the mouse"""
-    shape1, shape2 = arbiter.shapes
-    cnshape1 = shape1.cnshape
-    cnshape2 = shape2.cnshape
-    cnbody1 = shape1.body.cnbody
-    cnbody2 = shape2.body.cnbody
-
-    id1 = cnshape1.owner.name[-1]
-    id2 = cnshape2.owner.name[-1]
-    if id1 == id2:
-        if cnbody1.get_body_type() == Body.DYNAMIC:
-            cnshape2.owner.attach = cnshape1.owner
-        elif cnbody2.get_body_type() == Body.DYNAMIC:
-            cnshape1.owner.attach = cnshape2.owner
-        return False
-    return True
 
 
 def main():
-    """main"""
+    '''main'''
     pygame.mixer.pre_init(SAMPLERATE, -16, 2, 64)
     pygame.mixer.init()
     pygame.init()
@@ -85,104 +54,69 @@ def main():
     space = Space()
     space.gravity = 0.0, -981.0
 
-    space.add_collision_handler(
-        COLLTYPE_PAWN, COLLTYPE_TARGET, pawn_target_func)
+    world = World(space)
 
     # World
     raw_bg_img = pygame.image.load("bg.jpg")
     bg_img = pygame.transform.scale(
         raw_bg_img, (780, 420))
 
-    _ = make_line(space, "leftWall", "orange",
-                  None, Vec2(110, 30), Vec2(110, 550),
-                  Body.STATIC)
-    _ = make_line(space, "rightWall", "orange",
-                  None, Vec2(610, 30), Vec2(610, 550),
-                  Body.STATIC)
-
-    # Entities
-    aitarget0 = make_circle(space, "target0", "red",
-                            "birdred.png", Vec2(0, 0), 10,
-                            Body.KINEMATIC, COLLTYPE_TARGET)
-    aitarget1 = make_circle(space, "target1", "yellow",
-                            "birdyellow.png", Vec2(0, 0), 10,
-                            Body.KINEMATIC, COLLTYPE_TARGET)
-    aitarget2 = make_circle(space, "target2", "green",
-                            "birdgreen.png", Vec2(0, 0), 10,
-                            Body.KINEMATIC, COLLTYPE_TARGET)
-    aitarget3 = make_circle(space, "target3", "blue",
-                            "birdblue.png", Vec2(0, 0), 10,
-                            Body.KINEMATIC, COLLTYPE_TARGET)
-    aitarget4 = make_circle(space, "target4", "brown",
-                            "birdbrown.png", Vec2(0, 0), 10,
-                            Body.KINEMATIC, COLLTYPE_TARGET)
-
-    mouseball = make_circle(space, "mouse", "white",
-                            "hoop.png", Vec2(10, 10), 40,
-                            Body.KINEMATIC)
-
-    pawn0 = make_circle(space, "pawn0", "red",
-                        "hoopred.png", Vec2(200+110*0, 320), 50,
-                        Body.DYNAMIC, COLLTYPE_PAWN)
-    pawn1 = make_circle(space, "pawn1", "yellow",
-                        "hoopyellow.png", Vec2(200+110*1, 320), 50,
-                        Body.DYNAMIC, COLLTYPE_PAWN)
-    pawn2 = make_circle(space, "pawn2", "green",
-                        "hoopgreen.png", Vec2(200+110*2, 320), 50,
-                        Body.DYNAMIC, COLLTYPE_PAWN)
-    pawn3 = make_circle(space, "pawn3", "blue",
-                        "hoopblue.png", Vec2(200+110*3, 320), 50,
-                        Body.DYNAMIC, COLLTYPE_PAWN)
+    make_line(world, "leftWall", "orange",
+              None, Vec2(110, 30), Vec2(110, 550),
+              Body.STATIC, World.COLLTYPE_DEFAULT)
+    make_line(world, "rightWall", "orange",
+              None, Vec2(610, 30), Vec2(610, 550),
+              Body.STATIC, World.COLLTYPE_DEFAULT)
 
     # Controller
-    ai_controller = AICtrlr(
-        [aitarget0, aitarget1, aitarget2, aitarget3, aitarget4])
-    controllers.append(ai_controller)
-    mouse_controller = MouseCtrlr([mouseball], flipy)
-    controllers.append(mouse_controller)
-    human_controller = HumanCtrlr([pawn0, pawn1, pawn2, pawn3], SAMPLERATE)
-    controllers.append(human_controller)
+    human = HumanCtrlr()
+    controllers.append(human)
+    mouse = MouseCtrlr(flipy)
+    controllers.append(mouse)
+    agent = AgentCtrlr()
+    controllers.append(agent)
+    ref = RefCtrlr(world)
+    ref.add_human(human)
+    ref.add_mouse(mouse)
+    ref.add_agent(agent)
+    controllers.append(ref)
 
-    # GameState
-    run_physics = True
+    # start
+    ref.make_basic()
     paused = False
-
     last_secs = -1
+
     # Loop
     while running:
 
-        mouse_controller.handle_event(0)
+        mouse.handle_event(0)
         for event in pygame.event.get():
             if (event.type == pygame.JOYAXISMOTION or
                 event.type == pygame.JOYHATMOTION or
                 event.type == pygame.JOYBUTTONDOWN or
                     event.type == pygame.JOYBUTTONUP):
                 if event.joy == 0:
-                    human_controller.handle_event(event)
+                    human.handle_event(event)
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False
             elif event.type == pygame.ACTIVEEVENT:
-                if event.gain == 0:
-                    paused = True
-                else:
-                    paused = False
+                paused = bool(event.gain == 0)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 paused = True
             elif event.type == pygame.MOUSEBUTTONUP:
                 paused = False
 
-        # Update physics
-        if run_physics:
-            delta = 1.0 / 60.0
-            steps = 1
-            for _ in range(steps):
-                for ent in ents:
-                    ent.tick(delta)
-                for ctrlr in controllers:
-                    ctrlr.tick(delta)
+        # Update
+        delta = 1.0 / 60.0
+        steps = 1
+        for _ in range(steps):
+            if world.run_physics:
+                world.tick(delta)
                 space.step(delta)
+            for ctrlr in controllers:
+                ctrlr.tick(delta)
 
         # Draw stuff
         screen.blit(bg_img, (0, 0))
@@ -193,22 +127,21 @@ def main():
         text = smfont.render(line, True, pygame.Color("gray"))
         screen.blit(text, (5, 5))
         bigfont = pygame.font.Font(None, 32)
-        scoreline = "Score " + str(ai_controller.score)
+        scoreline = "Score " + str(agent.score)
         scoretext = bigfont.render(scoreline, True, pygame.Color("black"))
         screen.blit(scoretext, (5, 370))
 
-        secs = round(mouseball.elapsed_time)
+        secs = round(world.elapsed_time)
         if secs != last_secs:
             last_secs = secs
             if secs % 10 == 0:
-                print(str(secs)+", Score:"+str(ai_controller.score))
+                print(str(secs)+", Score:"+str(agent.score))
         timeline = "Time " + str(secs)
         timetext = bigfont.render(timeline, True, pygame.Color("black"))
         screen.blit(timetext, (400, 370))
 
         # Draw ents
-        for ent in ents:
-            ent.draw(screen, flipy)
+        world.draw(screen, flipy)
 
         # Flip screen
         pygame.display.flip()
