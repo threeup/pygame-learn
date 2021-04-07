@@ -71,3 +71,12 @@ class Body(object):
         '''
         munkpos = self.munkbody.position
         return Vec2(munkpos.x, munkpos.y)
+
+    
+    def get_vel(self):
+        '''
+        Returns the velocity
+        < (Vec2)
+        '''
+        munkvel = self.munkbody.velocity
+        return Vec2(munkvel.x, munkvel.y)

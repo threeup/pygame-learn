@@ -13,7 +13,6 @@ class EntyCircle(Enty):
     def __init__(self, name, color, radius, path):
         Enty.__init__(self, name)
         self.radius = radius
-        self.heading = 0
         self.color = color
         if path:
             raw_img = pygame.image.load(path)
@@ -25,7 +24,7 @@ class EntyCircle(Enty):
     def tick(self, delta):
         '''an event which represents time elapsed'''
         Enty.tick(self, delta)
-        if self.grounded is not False:
+        if self.grounded is False:
             self.heading = (self.heading + 3) % 360
 
     def rot_center(self, image, angle):

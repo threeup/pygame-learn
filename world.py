@@ -11,12 +11,17 @@ class World():
     COLLTYPE_DEFAULT = 0
     COLLTYPE_PAWN = 1
     COLLTYPE_TARGET = 2
+    COLLTYPE_CURSOR = 3
 
     def __init__(self, space):
         self.space = space
 
         self.space.add_collision_handler(
             self.COLLTYPE_PAWN, self.COLLTYPE_TARGET, self.pawn_target_func)
+        self.space.add_collision_handler(
+            self.COLLTYPE_PAWN, self.COLLTYPE_PAWN, self.pawn_pawn_func)
+        self.space.add_collision_handler(
+            self.COLLTYPE_PAWN, self.COLLTYPE_CURSOR, self.pawn_cursor_func)
 
         self.ents = []
         self.elapsed_time = 0
@@ -30,6 +35,14 @@ class World():
     def draw(self, screen, flipy):
         for ent in self.ents:
             ent.draw(screen, flipy)
+
+    @staticmethod
+    def pawn_cursor_func(arbiter, _space, _data):
+        return False
+        
+    @staticmethod
+    def pawn_pawn_func(arbiter, _space, _data):
+        return False
 
     @staticmethod
     def pawn_target_func(arbiter, _space, _data):

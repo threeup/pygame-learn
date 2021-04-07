@@ -6,7 +6,7 @@ from world import World
 from entyline import EntyLine
 from ctrlrref import RefCtrlr
 from ctrlragent import AgentCtrlr
-from ctrlrhuman import HumanCtrlr, MouseCtrlr
+from ctrlrhuman import HumanCtrlr
 from cnphy.body import Body
 from cnphy.space import Space
 from cnphy.vec2 import Vec2
@@ -69,27 +69,25 @@ def main():
               Body.STATIC, World.COLLTYPE_DEFAULT)
 
     # Controller
-    human = HumanCtrlr()
+    human = HumanCtrlr(flipy)
     controllers.append(human)
-    mouse = MouseCtrlr(flipy)
-    controllers.append(mouse)
     agent = AgentCtrlr()
     controllers.append(agent)
     ref = RefCtrlr(world)
     ref.add_human(human)
-    ref.add_mouse(mouse)
     ref.add_agent(agent)
     controllers.append(ref)
 
     # start
     ref.make_basic()
+    ref.make_good(2)
+    ref.make_noise(4)
     paused = False
     last_secs = -1
 
     # Loop
     while running:
-
-        mouse.handle_event(0)
+        human.handle_mouse()
         for event in pygame.event.get():
             if (event.type == pygame.JOYAXISMOTION or
                 event.type == pygame.JOYHATMOTION or

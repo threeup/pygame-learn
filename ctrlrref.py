@@ -1,5 +1,6 @@
 ''' holds Ctrlr and RefCtrlr class '''
 import pygame
+import random
 
 from ctrlr import Ctrlr
 from world import World
@@ -51,23 +52,19 @@ class RefCtrlr(Ctrlr):
         if idx == 0:
             name = "target0"
             color = "red"
-            filename = "birdred.png"
         elif idx == 1:
             name = "target1"
             color = "yellow"
-            filename = "birdyellow.png"
         elif idx == 2:
             name = "target2"
             color = "green"
-            filename = "birdgreen.png"
         elif idx == 3:
             name = "target3"
             color = "blue"
-            filename = "birdblue.png"
         else:
             name = "target4"
             color = "brown"
-            filename = "birdbrown.png"
+        filename = "bird"+color+".png"
         ent = self.make_circle(name, color,
                                filename, Vec2(0, 0), 10,
                                Body.KINEMATIC, World.COLLTYPE_TARGET)
@@ -78,40 +75,52 @@ class RefCtrlr(Ctrlr):
         if idx == 0:
             name = "pawn0"
             color = "red"
-            filename = "hoopred.png"
         elif idx == 1:
             name = "pawn1"
             color = "yellow"
-            filename = "hoopyellow.png"
         elif idx == 2:
             name = "pawn2"
             color = "green"
-            filename = "hoopgreen.png"
         elif idx == 3:
             name = "pawn3"
             color = "blue"
-            filename = "hoopblue.png"
         else:
             return
+        filename = "hoop"+color+".png"
         ent = self.make_circle(name, color,
                                filename, Vec2(200+110*idx, 320), 50,
                                Body.DYNAMIC, World.COLLTYPE_PAWN)
-        self.human.add_enty(ent)
+        self.human.add_hoop(ent)
 
     def make_basic(self):
-        ent = self.make_circle("mouse", "white",
-                               "hoop.png", Vec2(10, 10), 40,
-                               Body.KINEMATIC, World.COLLTYPE_DEFAULT)
-        self.mouse.add_enty(ent)
-        self.make_agent_ent(0)
-        self.make_human_ent(0)
+        ''' make some fundamentals '''
+        ent = self.make_circle("cursor", "white",
+                               "hoop.png", Vec2(10, 200), 40,
+                               Body.KINEMATIC, World.COLLTYPE_CURSOR)
+        self.human.add_cursor(ent)
 
-    def make_extra(self):
-        self.make_agent_ent(1)
-        self.make_agent_ent(2)
-        self.make_agent_ent(3)
-        self.make_agent_ent(4)
-        self.make_agent_ent(5)
-        self.make_human_ent(1)
-        self.make_human_ent(2)
-        self.make_human_ent(3)
+        ent = self.make_circle("hero", "purple",
+                               "hoop.png", Vec2(350, 40), 20,
+                               Body.KINEMATIC, World.COLLTYPE_DEFAULT)
+        self.human.add_hero(ent)
+
+    def make_good(self, count):
+        ''' make a pair of hoops and birds of the same color '''
+        values = []
+        for _ in range(count):
+            if len(values) == 0:
+                values = [0,1,2,3]
+            color = random.choice(values)
+            values.remove(color)
+            self.make_agent_ent(color)
+            self.make_human_ent(color)
+
+    def make_noise(self, count):
+        ''' make birds of garbage color '''
+        values = []
+        for _ in range(count):
+            if len(values) == 0:
+                values = [4,5,6,7]
+            color = random.choices(values)
+            self.make_agent_ent(color)
+    

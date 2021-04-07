@@ -49,7 +49,7 @@ class AgentCtrlr(Ctrlr):
                 enty.set_pos(next_pos)
                 continue
 
-            if enty_pos.x > 600:
+            if enty_pos.x > 750:
                 enty.set_pos(Vec2(0, enty_pos.y))
                 enty.set_fixed_vel(
                     Vec2(random.randrange(8, 13),
@@ -57,10 +57,10 @@ class AgentCtrlr(Ctrlr):
                 continue
 
             vel = enty.get_fixed_vel()
-            if enty_pos.y < 70 and vel.y < 0:
+            if enty_pos.y < 100 and vel.y < 0:
                 enty.set_fixed_vel(Vec2(vel.x, -vel.y))
                 vel = enty.get_fixed_vel()
-            elif enty_pos.y > 310 and vel.y > 0:
+            elif enty_pos.y > 370 and vel.y > 0:
                 enty.set_fixed_vel(Vec2(vel.x, -vel.y))
                 vel = enty.get_fixed_vel()
             spd = enty.fixed_speed

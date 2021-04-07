@@ -10,11 +10,12 @@ class Enty:
     '''
     def __init__(self, name):
         self.name = name
-        self.grounded = False
+        self.grounded = True
         self.elapsed_time = 0
         self.fixed_vel = Vec2(0, 0)
         self.fixed_speed = 0.2
         self.debug = False
+        self.heading = 0
         self.body = None
         self.shape = None
         self.attach = None
@@ -32,6 +33,13 @@ class Enty:
         < (Vec2)
         '''
         return self.fixed_vel
+
+    def get_body_vel(self):
+        '''
+        retrieve the phys velocity
+        < (Vec2)
+        '''
+        return self.body.get_vel()
 
     def set_pos(self, pos):
         '''
