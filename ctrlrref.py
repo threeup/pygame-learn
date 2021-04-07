@@ -1,6 +1,6 @@
 ''' holds Ctrlr and RefCtrlr class '''
-import pygame
 import random
+import pygame
 
 from ctrlr import Ctrlr
 from world import World
@@ -22,7 +22,7 @@ class RefCtrlr(Ctrlr):
         self.human = None
         self.mouse = None
         self.agent = None
-    
+
     def tick(self, _delta):
         '''manages stuff'''
         self.difficulty += 1
@@ -95,12 +95,12 @@ class RefCtrlr(Ctrlr):
     def make_basic(self):
         ''' make some fundamentals '''
         ent = self.make_circle("cursor", "white",
-                               "hoop.png", Vec2(10, 200), 40,
+                               "cloud.png", Vec2(10, 200), 40,
                                Body.KINEMATIC, World.COLLTYPE_CURSOR)
         self.human.add_cursor(ent)
 
-        ent = self.make_circle("hero", "purple",
-                               "hoop.png", Vec2(350, 40), 20,
+        ent = self.make_circle("hero", "white",
+                               "boy.png", Vec2(350, 10), 60,
                                Body.KINEMATIC, World.COLLTYPE_DEFAULT)
         self.human.add_hero(ent)
 
@@ -109,7 +109,7 @@ class RefCtrlr(Ctrlr):
         values = []
         for _ in range(count):
             if len(values) == 0:
-                values = [0,1,2,3]
+                values = [0, 1, 2, 3]
             color = random.choice(values)
             values.remove(color)
             self.make_agent_ent(color)
@@ -120,7 +120,6 @@ class RefCtrlr(Ctrlr):
         values = []
         for _ in range(count):
             if len(values) == 0:
-                values = [4,5,6,7]
+                values = [4, 5, 6, 7]
             color = random.choices(values)
             self.make_agent_ent(color)
-    

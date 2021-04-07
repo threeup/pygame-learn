@@ -28,20 +28,24 @@ class World():
         self.run_physics = True
 
     def tick(self, delta):
+        ''' increment the game '''
         self.elapsed_time += delta
         for ent in self.ents:
             ent.tick(delta)
 
     def draw(self, screen, flipy):
+        ''' draw the game '''
         for ent in self.ents:
             ent.draw(screen, flipy)
 
     @staticmethod
-    def pawn_cursor_func(arbiter, _space, _data):
+    def pawn_cursor_func(_arbiter, _space, _data):
+        ''' pawn does not collide with cursor'''
         return False
-        
+
     @staticmethod
-    def pawn_pawn_func(arbiter, _space, _data):
+    def pawn_pawn_func(_arbiter, _space, _data):
+        ''' pawn does not collide with pawns'''
         return False
 
     @staticmethod

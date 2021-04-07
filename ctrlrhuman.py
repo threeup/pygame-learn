@@ -4,11 +4,11 @@ from ctrlr import Ctrlr
 from cnphy.vec2 import Vec2
 
 
-
 class HumanCtrlr(Ctrlr):
     '''
     A class which manipulates controlled entities using human input events
     '''
+
     def __init__(self, flipy):
         # invoking the __init__ of the parent class
         Ctrlr.__init__(self)
@@ -18,18 +18,22 @@ class HumanCtrlr(Ctrlr):
         self.released = []
         self.hoops = []
         self.mouse = None
+        self.cursor = None
         self.hero = None
-        self.mouse_pos = Vec2(0,0)
+        self.mouse_pos = Vec2(0, 0)
 
     def add_cursor(self, enty):
+        ''' store cursor to be controlled by this '''
         Ctrlr.add_enty(self, enty)
         self.cursor = enty
 
     def add_hero(self, enty):
+        ''' store hero to be controlled by this '''
         Ctrlr.add_enty(self, enty)
         self.hero = enty
 
     def add_hoop(self, enty):
+        ''' store hoop to be controlled by this '''
         Ctrlr.add_enty(self, enty)
         self.hoops.append(enty)
         self.held.append(True)
@@ -37,9 +41,9 @@ class HumanCtrlr(Ctrlr):
         self.released.append(0)
 
     def handle_mouse(self):
+        ''' respond to mouse input '''
         raw_mouse_pos = pygame.mouse.get_pos()
         self.mouse_pos = Vec2(raw_mouse_pos[0], self.flipy(raw_mouse_pos[1]))
-        
 
     def handle_event(self, event):
         '''Respond to event, grabs joystick state'''
@@ -51,7 +55,8 @@ class HumanCtrlr(Ctrlr):
         elif event.type == pygame.JOYBUTTONUP:
             for i in range(count):
                 if event.button == i and self.held[i]:
-                    self.released[i] = self.hoops[i].elapsed_time - self.pressed[i]
+                    self.released[i] = self.hoops[i].elapsed_time - \
+                        self.pressed[i]
                     self.pressed[i] = 0
 
     def tick(self, delta):
@@ -69,27 +74,28 @@ class HumanCtrlr(Ctrlr):
         self.hero.set_pos(next_hero_pos)
         count = len(self.hoops)
         for i in range(count):
-            target_pos = hero_pos+Vec2(10*i,0)
+            target_pos = hero_pos+Vec2(50+10*i, 0)
             if self.released[i] > 0.01:
                 self.held[i] = False
                 self.released[i] = 0
                 speed = self.released[i]
                 impulse_mag = max(700, min(750*speed, 1500))
-                impulse_dir = Vec2(0,1).rotated(self.hero.heading)
+                impulse_dir = Vec2(0, 1).rotated(self.hero.heading)
                 impulse = impulse_dir.scaled(impulse_mag)
                 self.hoops[i].impulse(impulse)
             elif not self.held[i]:
-                #flying
+                # flying
                 hoop_vel = self.hoops[i].get_body_vel()
                 if hoop_vel.y < 0:
                     hoop_pos = self.hoops[i].get_pos()
                     diff = hoop_pos - target_pos
-                    
+
                     if diff.y < 30:
                         if diff.x < 30:
                             self.held[i] = True
                         else:
-                            next_hoop_pos = hoop_pos.lerp_step(target_pos, 250*delta)
+                            next_hoop_pos = hoop_pos.lerp_step(
+                                target_pos, 250*delta)
                             self.hoops[i].set_pos(next_hoop_pos)
 
             else:
